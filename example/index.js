@@ -1,4 +1,4 @@
-var gql = require('../graphql/wxgql.js');
+var gql = require('../authing/graphql/wxgql.js');
 var GraphQL = gql.GraphQL;
 
 Page({
