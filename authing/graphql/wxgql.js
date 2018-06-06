@@ -17,19 +17,15 @@ var GraphQL = function(obj, retObj) {
               query: queryObj.query,
               variables: queryObj.variables
             }),
-            success: function(res) {
-              resolve(res.data.data);
-            },
-            // fail: function(error) {
-            //   reject(error);
-            // },
             header: obj.header || queryObj.header,
             complete: function(res) {
-              if(res.statusCode != 200) {
-                // console.log(res.data.errors[0].message);
-                reject(res.data.errors[0].message);
+              var retData = res.data.errors ? res.data.errors[0].message : {
+                code: 200
+              };
+              if(res.statusCode == 200 && retData.code ==200) {
+                resolve(res.data);                
               }else {
-                resolve(res.data.data);           
+                reject(res.data.errors[0].message);
               }
             }
           });
@@ -45,13 +41,17 @@ var GraphQL = function(obj, retObj) {
               query: mutateObj.mutation,
               variables: mutateObj.variables
             }),
-            success: function(res) {
-              resolve(res)
-            },
-            fail: function(error) {
-              reject(error)
-            },            header: obj.header || mutateObj.header,
-            complete: mutateObj.complete
+            header: obj.header || mutateObj.header,
+            complete: function(res) {
+              var retData = res.data.errors ? res.data.errors[0].message : {
+                code: 200
+              };
+              if(res.statusCode == 200 && retData.code ==200) {
+                resolve(res.data);                
+              }else {
+                reject(res.data.errors[0].message);
+              }
+            }            
           });          
         });      
       }

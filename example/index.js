@@ -16,9 +16,11 @@ Page({
             email: 'test@testmail.com',
             password: 'testpassword'
         }).then(function(user) {
+          console.log('suss');
             console.log(user);    
         }).catch(function(error) {
-            conosle.log(error);    
+          console.log('suss error');          
+            console.log(error);    
         });
 
         // validAuth.login({

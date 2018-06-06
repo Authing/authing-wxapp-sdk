@@ -140,7 +140,7 @@ Authing.prototype = {
           }
         }, true);
 
-        return data.getAccessTokenByAppSecret;
+        return data.data.getAccessTokenByAppSecret;
       });
   },
 
@@ -286,7 +286,7 @@ Authing.prototype = {
       }
       return user;
     }).catch(function(error) {
-      throw error.graphQLErrors[0];
+      throw error;
     });
   },
 
