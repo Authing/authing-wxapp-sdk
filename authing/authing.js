@@ -174,7 +174,7 @@ Authing.prototype = {
     }).then(function(res) {
       return res.data.checkLoginStatus;
     }).catch(function(error) {
-      throw error.graphQLErrors[0];
+      throw error;
     });
   },
 
@@ -217,7 +217,7 @@ Authing.prototype = {
     .then(function(res) {
       return res.data.ReadOauthList;
     }).catch(function(error) {
-      throw error.graphQLErrors[0];
+      throw error;
     });
   },
 
@@ -354,7 +354,7 @@ Authing.prototype = {
     .then(function(res) {
       return res.data.register;
     }).catch(function(error) {
-      throw error.graphQLErrors[0];
+      throw error;
     });
   },
 
@@ -381,7 +381,7 @@ Authing.prototype = {
       _id: _id,
       tokenExpiredAt: 0
     }).catch(function(error) {
-      throw error.graphQLErrors[0];
+      throw error;
     });
 
   },
@@ -428,7 +428,7 @@ Authing.prototype = {
     }).then(function(res) {
       return res.data.user;
     }).catch(function(error) {
-      throw error.graphQLErrors[0];
+      throw error;
     });
   },
 
@@ -510,7 +510,7 @@ Authing.prototype = {
     }).then(function(res) {
       return res.data.users;
     }).catch(function(error) {
-      throw error.graphQLErrors[0];
+      throw error;
     });
   },
 
@@ -540,7 +540,7 @@ Authing.prototype = {
     }).then(function(res) {
       return res.data.removeUsers;
     }).catch(function(error) {
-      throw error.graphQLErrors[0];
+      throw error;
     }); 
 
   },
@@ -698,7 +698,7 @@ Authing.prototype = {
         }).then(function(res) {
           return res.data.updateUser;
         }).catch(function(error) {
-          throw error.graphQLErrors[0];
+          throw error;
         });
       }
     }
@@ -717,7 +717,7 @@ Authing.prototype = {
     }).then(function(res) {
       return res.data.updateUser;
     }).catch(function(error) {
-      throw error.graphQLErrors[0];
+      throw error;
     }); 
   },
 
@@ -765,7 +765,7 @@ Authing.prototype = {
     }).then(function(res) {
       return res.data.sendResetPasswordEmail;
     }).catch(function(error) {
-      throw error.graphQLErrors[0];
+      throw error;
     });
     
   },
@@ -803,7 +803,7 @@ Authing.prototype = {
     }).then(function(res) {
       return res.data.verifyResetPasswordVerifyCode;
     }).catch(function(error) {
-      throw error.graphQLErrors[0];
+      throw error;
     });
     
   },
@@ -866,7 +866,7 @@ Authing.prototype = {
     }).then(function(res) {
       return res.data.changePassword;
     }).catch(function(error) {
-      throw error.graphQLErrors[0];
+      throw error;
     });
   },
 
@@ -897,7 +897,7 @@ Authing.prototype = {
     }).then(function(res) {
       return res.data.sendVerifyEmail;
     }).catch(function(error) {
-      throw error.graphQLErrors[0];
+      throw error;
     });
   },
 
