@@ -1,6 +1,15 @@
-var gql = require('../graphql/wxgql.js');
+var gql = require('./graphql/wxgql.js');
 var GraphQL = gql.GraphQL;
-var configs = require('./configs.js')
+var configs = require('./configs.js');
+var RSA = require('./utils/wxapp_rsa.js');
+
+var _encryption = function(paw) {
+  var encrypt_rsa = new RSA.RSAKey();
+  encrypt_rsa = RSA.KEYUTIL.getKey(configs.openSSLSecret);
+  var encStr = encrypt_rsa.encrypt(paw);
+  encStr = RSA.hex2b64(encStr);
+  return encStr.toString();
+};
 
 var Authing = function(opts) {
   var self = this;
@@ -41,7 +50,7 @@ var Authing = function(opts) {
     }else {
       self.ownerAuth.authed = true;
       self.ownerAuth.authSuccess = false;
-      throw 'auth failed, please check your secret and client ID.';     
+      throw 'auth failed, please check your secret and client ID.';
     }
     return self;
   }).catch(function(error) {
@@ -62,11 +71,11 @@ Authing.prototype = {
         header: {
           authorization: 'Bearer ' + token,
         }
-      });
+      }, true);
     }else {
       return new GraphQL({
         url: configs.services.user.host
-      });      
+      }, true); 
     }
   },
 
@@ -78,7 +87,7 @@ Authing.prototype = {
         token: token
       };
       if(configs.inBrowser) {
-        localStorage.setItem('_authing_token', token);
+        wx.setStorage('_authing_token', token);
       }
     }
     this.UserClient = this._initClient(token);
@@ -98,7 +107,7 @@ Authing.prototype = {
   initOAuthClient: function() {
     this.OAuthClient = new GraphQL({
       url: configs.services.oauth.host
-    });    
+    }, true);    
   },
 
   _auth: function() {
@@ -106,7 +115,7 @@ Authing.prototype = {
     if(!this._AuthService) {
       this._AuthService = new GraphQL({
         url: configs.services.user.host
-      });
+      }, true);
     }
 
     let options = {
@@ -117,41 +126,28 @@ Authing.prototype = {
     var self = this;
 
     return this._AuthService.query({
-      query: gql`
+      query: `
         query {
-        getAccessTokenByAppSecret(secret: "${options.secret}", clientId: "${options.clientId}")
+          getAccessTokenByAppSecret(secret: "${options.secret}", clientId:  "${options.clientId}")
         }
       `,
     })
       .then(function(data) {
+        self._AuthService = new GraphQL({
+          url: configs.services.user.host,
+          header: {
+            authorization: 'Bearer ' + data.getAccessTokenByAppSecret,
+          }
+        }, true);
 
-      var httpLink = new HttpLink({ 
-          uri: configs.services.user.host, 
-          fetch: nodeFetch
-        });
-
-      var authMiddleware = new ApolloLink((operation, forward) => {
-        operation.setContext({
-          headers: {
-            authorization: 'Bearer ' + data.data.getAccessTokenByAppSecret,
-          } 
-        });
-
-        return forward(operation);
-      });     
-
-      self._AuthService = new ApolloClient({
-          link: concat(authMiddleware, httpLink),
-          cache: new InMemoryCache()
-      });       
-        return data.data.getAccessTokenByAppSecret;
+        return data.getAccessTokenByAppSecret;
       });
   },
 
   _loginFromLocalStorage: function() {
     var self = this;
     if(configs.inBrowser) {
-      var _authing_token = localStorage.getItem('_authing_token');
+      var _authing_token = wx.getStorage('_authing_token');
       if(_authing_token) {
         self.initUserClient(_authing_token);
       }
@@ -168,7 +164,7 @@ Authing.prototype = {
             });
     }
     return this.UserClient.query({
-      query: gql`query checkLoginStatus {
+      query: `query checkLoginStatus {
         checkLoginStatus {
           status
           code
@@ -189,29 +185,18 @@ Authing.prototype = {
     this.haveAccess();
 
     if(!this._OAuthService) {
-      var httpLink = new HttpLink({ 
-          uri: configs.services.oauth.host, 
-          fetch: nodeFetch
-        });
-      var authMiddleware = new ApolloLink((operation, forward) => {
-        operation.setContext({
-          headers: {
-            authorization: 'Bearer ' + self.ownerAuth.token,
-          } 
-        });
-
-        return forward(operation);
-      });     
-      this._OAuthService = new ApolloClient({
-          link: concat(authMiddleware, httpLink),
-          cache: new InMemoryCache()
-      });     
+      self._OAuthService = new GraphQL({
+        url: configs.services.oauth.host,
+        header: {
+          authorization: 'Bearer ' + self.ownerAuth.token,
+        }
+      }, true);      
     }
 
     var self = this;
 
     return this._OAuthService.query({
-      query: gql`
+      query: `
         query getOAuthList($clientId: String!) {
           ReadOauthList(clientId: $clientId) {
               _id
@@ -264,7 +249,7 @@ Authing.prototype = {
     this.haveAccess();
 
     return this.UserClient.mutate({
-      mutation: gql`
+      mutation: `
         mutation login($unionid: String, $email: String, $password: String, $lastIP: String, $registerInClient: String!, $verifyCode: String) {
             login(unionid: $unionid, email: $email, password: $password, lastIP: $lastIP, registerInClient: $registerInClient, verifyCode: $verifyCode) {
               _id
@@ -320,7 +305,7 @@ Authing.prototype = {
     }
 
     return this.UserClient.mutate({
-      mutation: gql`
+      mutation: `
         mutation register(
           $unionid: String,
             $email: String, 
@@ -414,7 +399,7 @@ Authing.prototype = {
     var client = this._chooseClient();
     
     return client.query({
-      query: gql`query user($id: String!, $registerInClient: String!){
+      query: `query user($id: String!, $registerInClient: String!){
         user(id: $id, registerInClient: $registerInClient) {
           _id
           email
@@ -461,7 +446,7 @@ Authing.prototype = {
     }
 
     return this.ownerClient.query({
-      query: gql`query users($registerInClient: String, $page: Int, $count: Int){
+      query: `query users($registerInClient: String, $page: Int, $count: Int){
           users(registerInClient: $registerInClient, page: $page, count: $count) {
             totalCount
             list {
@@ -563,7 +548,7 @@ Authing.prototype = {
   _uploadAvatar: function(options) {
     var client = this._chooseClient();
     return client.query({
-      query: gql`query qiNiuUploadToken {
+      query: `query qiNiuUploadToken {
         qiNiuUploadToken
       }`
     }).then(function(data) {
@@ -699,7 +684,7 @@ Authing.prototype = {
         return this._uploadAvatar(options).then(function(options) {
           var _arg = generateArgs(options);
           return client.mutate({
-            mutation: gql`
+            mutation: `
               mutation UpdateUser(${_arg._argsString}){
                 updateUser(options: {
                   ${_arg._argsFiller.join(', ')}
@@ -719,7 +704,7 @@ Authing.prototype = {
     }
     var _arg = generateArgs(options);
     return client.mutate({
-      mutation: gql`
+      mutation: `
         mutation UpdateUser(${_arg._argsString}){
           updateUser(options: {
             ${_arg._argsFiller.join(', ')}
@@ -762,7 +747,7 @@ Authing.prototype = {
   
     options.client = this.opts.clientId;
     return this.UserClient.mutate({
-      mutation: gql`
+      mutation: `
         mutation sendResetPasswordEmail(
           $email: String!,
           $client: String!
@@ -798,7 +783,7 @@ Authing.prototype = {
     }
     options.client = this.opts.clientId;
     return this.UserClient.mutate({
-      mutation: gql`
+      mutation: `
         mutation verifyResetPasswordVerifyCode(
           $email: String!,
           $client: String!,
@@ -842,7 +827,7 @@ Authing.prototype = {
     options.client = this.opts.clientId;
     options.password = _encryption(options.password)
     return this.UserClient.mutate({
-      mutation: gql`
+      mutation: `
         mutation changePassword(
           $email: String!,
           $client: String!,
@@ -893,7 +878,7 @@ Authing.prototype = {
     options.client = this.opts.clientId;
 
     return this._AuthService.mutate({
-      mutation: gql`
+      mutation: `
         mutation sendVerifyEmail(
           $email: String!,
           $client: String!

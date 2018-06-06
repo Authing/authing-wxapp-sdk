@@ -9,33 +9,51 @@ var GraphQL = function(obj, retObj) {
   if(retObj) {
     return {
       query: function(queryObj) {
-        return wx.request({
-          url: obj.url,
-          method: 'POST',
-          data: JSON.stringify({
-            query: queryObj.query,
-            variables: queryObj.variables
-          }),
-          success: queryObj.success,
-          fail: queryObj.fail,
-          header: obj.header || queryObj.header,
-          complete: queryObj.complete
+        return new Promise(function(resolve, reject) {
+          wx.request({
+            url: obj.url,
+            method: 'POST',
+            data: JSON.stringify({
+              query: queryObj.query,
+              variables: queryObj.variables
+            }),
+            success: function(res) {
+              resolve(res.data.data);
+            },
+            // fail: function(error) {
+            //   reject(error);
+            // },
+            header: obj.header || queryObj.header,
+            complete: function(res) {
+              if(res.statusCode != 200) {
+                // console.log(res.data.errors[0].message);
+                reject(res.data.errors[0].message);
+              }else {
+                resolve(res.data.data);           
+              }
+            }
+          });
         });
       },
 
       mutate: function(mutateObj) {
-        return wx.request({
-          url: obj.url,
-          method: 'POST',
-          data: JSON.stringify({
-            mutation: mutateObj.mutate,
-            variables: mutateObj.variables
-          }),
-          success: mutateObj.success,
-          fail: mutateObj.fail,
-          header: obj.header || mutateObj.header,
-          complete: mutateObj.complete
-        });        
+        return new Promise(function(resolve, reject) {
+          wx.request({
+            url: obj.url,
+            method: 'POST',
+            data: JSON.stringify({
+              query: mutateObj.mutation,
+              variables: mutateObj.variables
+            }),
+            success: function(res) {
+              resolve(res)
+            },
+            fail: function(error) {
+              reject(error)
+            },            header: obj.header || mutateObj.header,
+            complete: mutateObj.complete
+          });          
+        });      
       }
     }
   }else {

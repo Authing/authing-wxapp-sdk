@@ -1,26 +1,38 @@
-var gql = require('../authing/graphql/wxgql.js');
-var GraphQL = gql.GraphQL;
+var Authing = require('../authing/authing.js');
 
 Page({
   test: function() {
 
-    let gql = GraphQL({
-      url: 'https://users.authing.cn/graphql'
+    var auth = new Authing({
+      clientId: '5b1757e682f4ce00014fdd3e',
+      secret: '15ed89a727443f9cf66d0c2abbfee82b'
     });
 
-    gql({
-      body: {
-        query: `query getAccessTokenByAppSecret($secret: String!, $clientId: String!){
-    getAccessTokenByAppSecret(secret: $secret, clientId: $clientId)
-}`,
-        variables: {
-          secret: '427e24d3b7e289ae9469ab6724dc7ff0',
-          clientId: '5a9fa26cf8635a000185528c'
-        }
-      },
-      success: function (res) {
-        console.log(res);
-      }      
+    auth.then(function(validAuth) {
+
+        //验证成功后返回新的authing-js-sdk实例(validAuth)，可以将此实例挂在全局
+
+        validAuth.login({
+            email: 'test@testmail.com',
+            password: 'testpassword'
+        }).then(function(user) {
+            console.log(user);    
+        }).catch(function(error) {
+            conosle.log(error);    
+        });
+
+        // validAuth.login({
+        //     email: 'test@testmail.com',
+        //     password: 'testpassword'
+        // }).then(function(user) {
+        //     console.log(user);    
+        // }).catch(function(error) {
+        //     conosle.log(error);    
+        // });
+
+    }).catch(function(error) {
+        //验证失败
+        console.log(error);
     });
 
   }
