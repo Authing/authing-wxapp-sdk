@@ -6,7 +6,13 @@
 
 #### 使用
 
-1、引入文件 
+1、引入文件
+
+``` shell
+git clone https://github.com/Authing/authing-wxapp-sdk
+```
+
+然后将authing文件夹移动到你的项目目录下，之后使用require引入
 
 ```javascript
 var Authing = require('path/to/authing/authing.js')
