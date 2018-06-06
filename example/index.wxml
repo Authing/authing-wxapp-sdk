@@ -1,0 +1,4 @@
+<view style="padding:20px">
+	<button ontap="test" style="margin-bottom:20px;">登录</button>
+	<button ontap="test">注册</button>
+</view>
