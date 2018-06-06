@@ -4,6 +4,10 @@
 
 相关接口和JavaScript版本相同：[https://github.com/Authing/authing-js-sdk](https://github.com/Authing/authing-js-sdk)
 
+[![Watch the video](https://usercontents.authing.cn/20180528-184211@2x.png)](https://usercontents.authing.cn/wxapp-sdk-demo.mp4)
+
+此repo可下载后直接用小程序开发工具打开.
+
 #### 使用
 
 1、引入文件
