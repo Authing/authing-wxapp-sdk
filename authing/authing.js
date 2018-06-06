@@ -525,7 +525,7 @@ Authing.prototype = {
     }
 
     return this.ownerClient.mutate({
-      mutation: gql `
+      mutation: `
         mutation removeUsers($ids: [String], $registerInClient: String, $operator: String){
           removeUsers(ids: $ids, registerInClient: $registerInClient, operator: $operator) {
             _id
