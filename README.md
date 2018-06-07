@@ -27,8 +27,6 @@ var Authing = require('path/to/authing/authing.js')
 3、调用
 
 ``` javascript
-var Authing = require('authing-js-sdk');
-
 // 对Client ID和Client Secret进行验证，获取Access Token
 var auth = new Authing({
 	clientId: 'your_client_id',
