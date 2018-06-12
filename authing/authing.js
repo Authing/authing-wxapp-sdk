@@ -899,21 +899,7 @@ Authing.prototype = {
     }).catch(function(error) {
       throw error;
     });
-  },
-
-  selectAvatarFile: function(cb) {
-    if(!configs.inBrowser) {
-      throw '当前不是浏览器环境，无法选取文件';
-    }
-    var inputElem =  document.createElement("input");  
-    inputElem.type = "file"; 
-    inputElem.accept = "image/*";             
-    inputElem.onchange = function() {
-      cb(inputElem.files[0]);
-    }
-    inputElem.click()
   }
-
 }
 
 module.exports = Authing
