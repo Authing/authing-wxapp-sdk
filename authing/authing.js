@@ -87,7 +87,7 @@ Authing.prototype = {
         token: token
       };
       if(configs.inBrowser) {
-        wx.setStorage('_authing_token', token);
+        wx.setStorageSync('_authing_token', token);
       }
     }
     this.UserClient = this._initClient(token);
@@ -147,7 +147,7 @@ Authing.prototype = {
   _loginFromLocalStorage: function() {
     var self = this;
     if(configs.inBrowser) {
-      var _authing_token = wx.getStorage('_authing_token');
+      var _authing_token = wx.getStorageSync('_authing_token');
       if(_authing_token) {
         self.initUserClient(_authing_token);
       }
