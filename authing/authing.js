@@ -154,15 +154,8 @@ Authing.prototype = {
     }
   },
 
-  checkLoginStatus: function() {
+  checkLoginStatus: function(token) {
     var self = this;
-    if(!self.userAuth.authSuccess) {
-      return Promise.resolve({
-                code: 2020,
-                status: false,
-                message: '未登录'
-            });
-    }
     return this.UserClient.query({
       query: `query checkLoginStatus {
         checkLoginStatus {
@@ -170,7 +163,10 @@ Authing.prototype = {
           code
           message
         }
-      }`
+      }`,
+      variables: {
+        token: token
+      }
     }).then(function(res) {
       return res.data.checkLoginStatus;
     }).catch(function(error) {
@@ -814,9 +810,6 @@ Authing.prototype = {
     }
     if(!options.email) {
       throw 'email in options is not provided';
-    }
-    if(!options.client) {
-      throw 'client in options is not provided';
     }
     if(!options.password) {
       throw 'password in options is not provided';
