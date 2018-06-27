@@ -157,13 +157,15 @@ Authing.prototype = {
   checkLoginStatus: function(token) {
     var self = this;
     return this.UserClient.query({
-      query: `query checkLoginStatus {
-        checkLoginStatus {
-          status
-          code
-          message
+      query: `
+        query checkLoginStatus($token: String) {
+        	checkLoginStatus(token: $token) {
+        		status
+        		code
+	          message
+        	}
         }
-      }`,
+      `,
       variables: {
         token: token
       }
