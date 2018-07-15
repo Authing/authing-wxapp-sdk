@@ -12,13 +12,13 @@ var _encryption = function(paw) {
 };
 
 var errorHandler = function(resolve, reject, res) {
-  var retData = res.data.data ? res.data.data : {
+  var retData = res.data ? res.data : {
     code: 200
   };
   if(res.statusCode == 200 && retData.code == 200) {
-    resolve(res.data.data);                
+    resolve(res.data.data || res.data);                
   }else {
-    reject(res.data.data);
+    reject(res.data.data || res.data);
   }
 }
 
