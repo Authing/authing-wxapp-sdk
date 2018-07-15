@@ -11,6 +11,17 @@ var _encryption = function(paw) {
   return encStr.toString();
 };
 
+var errorHandler = function(resolve, reject, res) {
+  var retData = res.data.data ? res.data.data : {
+    code: 200
+  };
+  if(res.statusCode == 200 && retData.code == 200) {
+    resolve(res.data.data);                
+  }else {
+    reject(res.data.data);
+  }
+}
+
 var Authing = function(opts) {
   var self = this;
   if(!opts.clientId) {
@@ -894,7 +905,21 @@ Authing.prototype = {
     }).catch(function(error) {
       throw error;
     });
-  }
+  },
+
+  grantWxapp: function(code) {
+    var self = this;
+    return new Promise(function(resolve, reject) {
+      wx.request({
+        url: `https://oauth.authing.cn/oauth/wxapp/grant/${self.opts.clientId}?alias=wxapp&code=${code}`,
+        method: 'get',
+        // header: obj.header || mutateObj.header,
+        complete: function(res) {
+          errorHandler(resolve, reject, res);
+        }            
+      });
+    });
+  }  
 }
 
 module.exports = Authing
