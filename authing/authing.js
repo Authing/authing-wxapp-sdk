@@ -24,12 +24,16 @@ var errorHandler = function(resolve, reject, res) {
 
 var Authing = function(opts) {
   var self = this;
-  if(!opts.clientId) {
-    throw 'clientId is not provided';
-  }
+  if(!opts.pureUsing) {
 
-  if(!opts.secret) {
-    throw 'app secret is not provided';
+    if(!opts.clientId) {
+      throw 'clientId is not provided';
+    }
+
+    if(!opts.secret) {
+      throw 'app secret is not provided';
+    }
+
   }
 
   if(opts.host) {
@@ -54,6 +58,12 @@ var Authing = function(opts) {
   this.initOwnerClient();
   this.initOAuthClient();
 
+  if(opts.pureUsing) {
+    self.ownerAuth.authed = true;
+    self.ownerAuth.authSuccess = false;
+    return this; 
+  }	
+	
   return this._auth().then(function(token) {
     if(token) {
       self.initOwnerClient(token);
@@ -907,11 +917,12 @@ Authing.prototype = {
     });
   },
 
-  grantWxapp: function(code) {
+  grantWxapp: function(code, random) {
     var self = this;
+    var clientId = self.opts.clientId || '';
     return new Promise(function(resolve, reject) {
       wx.request({
-        url: `https://oauth.authing.cn/oauth/wxapp/grant/${self.opts.clientId}?alias=wxapp&code=${code}`,
+        url: `https://oauth.authing.cn/oauth/wxapp/grant/?clientId=${clientId}&alias=wxapp&code=${code}&random=${random}`,
         method: 'get',
         // header: obj.header || mutateObj.header,
         complete: function(res) {
@@ -919,7 +930,7 @@ Authing.prototype = {
         }            
       });
     });
-  }  
+  }
 }
 
 module.exports = Authing
