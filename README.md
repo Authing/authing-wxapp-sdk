@@ -1,22 +1,24 @@
-# authing-wxapp-sdk
+# authing-wxapp-sdk（Authing SDK for 小程序）
 
-> Authing的官方SDK for 微信小程序
-
-相关接口和JavaScript版本相同：[https://github.com/Authing/authing-js-sdk](https://github.com/Authing/authing-js-sdk)
+> 相关接口和JavaScript版本相同：[https://github.com/Authing/authing-js-sdk](https://github.com/Authing/authing-js-sdk)
 
 [![Watch the video](https://usercontents.authing.cn/20180528-184211@2x.png)](https://usercontents.authing.cn/wxapp-sdk-demo.mp4)
 
-此repo可下载后直接用小程序开发工具打开.
+点击图片查看demo视频
 
-#### 使用
+Github地址：[https://github.com/Authing/authing-wxapp-sdk](https://github.com/Authing/authing-wxapp-sdk)
 
-1、下载代码
+相关示例可直接下载源代码用小程序开发工具运行
+
+> **NOTE!**在小程序中开发需要在小程序管理后台中配置域名，两个域名分别为：``https://users.authing.cn``和``https://oauth.authing.cn``
+
+#### 下载代码
 
 ``` shell
 git clone https://github.com/Authing/authing-wxapp-sdk
 ```
 
-2、引入文件
+#### 引入文件
 
 然后将repo内的authing文件夹移动到你的项目目录下，之后使用require引入
 
@@ -24,10 +26,12 @@ git clone https://github.com/Authing/authing-wxapp-sdk
 var Authing = require('path/to/authing/authing.js')
 ```
 
-3、调用
+#### 调用
+
+注意，在使用小程序SDK时，可以不传入email和password参数，取而代之的是unionid，就是从小程序获取的openid或unionid。
 
 ``` javascript
-// 对Client ID和Client Secret进行验证，获取Access Token
+
 var auth = new Authing({
 	clientId: 'your_client_id',
 	secret: 'your_app_secret'
@@ -38,8 +42,7 @@ auth.then(function(validAuth) {
 	//验证成功后返回新的authing-js-sdk实例(validAuth)，可以将此实例挂在全局
 
 	validAuth.login({
-		email: 'test@testmail.com',
-		password: 'testpassword'
+		unionid: 'test@testmail.com',
 	}).then(function(user) {
 		console.log(user);	
 	}).catch(function(error) {
