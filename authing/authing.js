@@ -3,7 +3,7 @@ var GraphQL = gql.GraphQL;
 var configs = require('./configs.js');
 var RSA = require('./utils/wxapp_rsa.js');
 
-var _encryption = function(paw) {
+var _encryption = function (paw) {
   var encrypt_rsa = new RSA.RSAKey();
   encrypt_rsa = RSA.KEYUTIL.getKey(configs.openSSLSecret);
   var encStr = encrypt_rsa.encrypt(paw);
@@ -11,32 +11,34 @@ var _encryption = function(paw) {
   return encStr.toString();
 };
 
-var errorHandler = function(resolve, reject, res) {
+var errorHandler = function (resolve, reject, res) {
   var retData = res.data ? res.data : {
     code: 200
   };
-  if(res.statusCode == 200 && retData.code == 200) {
-    resolve(res.data.data || res.data);                
-  }else {
+  console.log(res.statusCode == 200 && retData.code == 200);
+  if (res.statusCode == 200 && retData.code == 200) {
+    resolve(res.data.data || res.data);
+  } else {
     reject(res.data.data || res.data);
   }
 }
 
-var Authing = function(opts) {
+var Authing = function (opts) {
   var self = this;
-  if(!opts.pureUsing) {
 
-    if(!opts.clientId) {
+  if (!opts.pureUsing) {
+
+    if (!opts.clientId) {
       throw 'clientId is not provided';
     }
 
-    if(!opts.secret) {
+    if (!opts.secret) {
       throw 'app secret is not provided';
     }
 
   }
 
-  if(opts.host) {
+  if (opts.host) {
     configs.services.user.host = opts.host.user || configs.services.user.host;
     configs.services.oauth.host = opts.host.oauth || configs.services.oauth.host;
   }
@@ -58,23 +60,23 @@ var Authing = function(opts) {
   this.initOwnerClient();
   this.initOAuthClient();
 
-  if(opts.pureUsing) {
+  if (opts.pureUsing) {
     self.ownerAuth.authed = true;
     self.ownerAuth.authSuccess = false;
-    return this; 
-  }	
-	
-  return this._auth().then(function(token) {
-    if(token) {
+    return this;
+  }
+
+  return this._auth().then(function (token) {
+    if (token) {
       self.initOwnerClient(token);
       self._loginFromLocalStorage();
-    }else {
+    } else {
       self.ownerAuth.authed = true;
       self.ownerAuth.authSuccess = false;
       throw 'auth failed, please check your secret and client ID.';
     }
     return self;
-  }).catch(function(error) {
+  }).catch(function (error) {
     self.ownerAuth.authed = true;
     self.ownerAuth.authSuccess = false;
     throw 'auth failed: ' + error.message;
@@ -85,37 +87,37 @@ Authing.prototype = {
 
   constructor: Authing,
 
-  _initClient: function(token) {
-    if(token) {
+  _initClient: function (token) {
+    if (token) {
       return new GraphQL({
         url: configs.services.user.host,
         header: {
           authorization: 'Bearer ' + token,
         }
       }, true);
-    }else {
+    } else {
       return new GraphQL({
         url: configs.services.user.host
-      }, true); 
+      }, true);
     }
   },
 
-  initUserClient: function(token) {
-    if(token) {
+  initUserClient: function (token) {
+    if (token) {
       this.userAuth = {
         authed: true,
         authSuccess: true,
         token: token
       };
-      if(configs.inBrowser) {
+      if (configs.inBrowser) {
         wx.setStorageSync('_authing_token', token);
       }
     }
     this.UserClient = this._initClient(token);
   },
 
-  initOwnerClient: function(token) {
-    if(token) {
+  initOwnerClient: function (token) {
+    if (token) {
       this.ownerAuth = {
         authed: true,
         authSuccess: true,
@@ -125,15 +127,15 @@ Authing.prototype = {
     this.ownerClient = this._initClient(token);
   },
 
-  initOAuthClient: function() {
+  initOAuthClient: function () {
     this.OAuthClient = new GraphQL({
       url: configs.services.oauth.host
-    }, true);    
+    }, true);
   },
 
-  _auth: function() {
+  _auth: function () {
 
-    if(!this._AuthService) {
+    if (!this._AuthService) {
       this._AuthService = new GraphQL({
         url: configs.services.user.host
       }, true);
@@ -153,7 +155,7 @@ Authing.prototype = {
         }
       `,
     })
-      .then(function(data) {
+      .then(function (data) {
         self._AuthService = new GraphQL({
           url: configs.services.user.host,
           header: {
@@ -165,51 +167,53 @@ Authing.prototype = {
       });
   },
 
-  _loginFromLocalStorage: function() {
+  _loginFromLocalStorage: function () {
     var self = this;
-    if(configs.inBrowser) {
+    if (configs.inBrowser) {
       var _authing_token = wx.getStorageSync('_authing_token');
-      if(_authing_token) {
+      if (_authing_token) {
         self.initUserClient(_authing_token);
       }
     }
   },
 
-  checkLoginStatus: function(token) {
+  checkLoginStatus: function () {
     var self = this;
+    if (!self.userAuth.authSuccess) {
+      return Promise.resolve({
+        code: 2020,
+        status: false,
+        message: '未登录'
+      });
+    }
     return this.UserClient.query({
-      query: `
-        query checkLoginStatus($token: String) {
-        	checkLoginStatus(token: $token) {
-        		status
-        		code
-	          message
-        	}
+      query: `query checkLoginStatus {
+        checkLoginStatus {
+          status
+          code
+          message
         }
-      `,
-      variables: {
-        token: token
-      }
-    }).then(function(res) {
+      }`
+    }).then(function (res) {
       return res.data.checkLoginStatus;
-    }).catch(function(error) {
+    }).catch(function (error) {
       throw error;
     });
   },
 
-  _readOAuthList: function() {
+  _readOAuthList: function () {
 
     var self = this;
 
     this.haveAccess();
 
-    if(!this._OAuthService) {
+    if (!this._OAuthService) {
       self._OAuthService = new GraphQL({
         url: configs.services.oauth.host,
         header: {
           authorization: 'Bearer ' + self.ownerAuth.token,
         }
-      }, true);      
+      }, true);
     }
 
     var self = this;
@@ -230,38 +234,38 @@ Authing.prototype = {
         }
       `,
       variables: {
-        clientId: self.opts.clientId        
+        clientId: self.opts.clientId
       }
     })
-    .then(function(res) {
-      return res.data.ReadOauthList;
-    }).catch(function(error) {
-      throw error;
-    });
+      .then(function (res) {
+        return res.data.ReadOauthList;
+      }).catch(function (error) {
+        throw error;
+      });
   },
 
-  haveAccess: function() {
-    if(!this.ownerAuth.authSuccess) {
+  haveAccess: function () {
+    if (!this.ownerAuth.authSuccess) {
       throw 'have no access, please check your secret and client ID.';
     }
   },
 
-  _chooseClient: function() {
-    if(this.userAuth.authSuccess) {
+  _chooseClient: function () {
+    if (this.userAuth.authSuccess) {
       return this.UserClient;
     }
     return this.ownerClient;
   },
 
-  _login: function(options) {
+  _login: function (options) {
 
-    if(!options) {
+    if (!options) {
       throw 'options is not provided.';
     }
 
     options['registerInClient'] = this.opts.clientId;
 
-    if(options.password) {
+    if (options.password) {
       options.password = _encryption(options.password);
     }
 
@@ -291,35 +295,35 @@ Authing.prototype = {
         }
       `,
       variables: options
-    }).then(function(res) {
+    }).then(function (res) {
       return res.data.login;
     });
 
   },
 
-  login: function(options) {
+  login: function (options) {
     let self = this;
-    return this._login(options).then(function(user) {
-      if(user) {
-        self.initUserClient(user.token);        
+    return this._login(options).then(function (user) {
+      if (user) {
+        self.initUserClient(user.token);
       }
       return user;
-    }).catch(function(error) {
+    }).catch(function (error) {
       throw error;
     });
   },
 
-  register: function(options) {
+  register: function (options) {
 
     this.haveAccess();
 
-    if(!options) {
+    if (!options) {
       throw 'options is not provided';
     }
 
     options.registerInClient = this.opts.clientId;
 
-    if(options.password) {
+    if (options.password) {
       options.password = _encryption(options.password);
     }
 
@@ -370,18 +374,18 @@ Authing.prototype = {
       `,
       variables: options
     })
-    .then(function(res) {
-      return res.data.register;
-    }).catch(function(error) {
-      throw error;
-    });
+      .then(function (res) {
+        return res.data.register;
+      }).catch(function (error) {
+        throw error;
+      });
   },
 
-  logout: function(_id) {
+  logout: function (_id) {
 
     this.haveAccess();
 
-    if(!_id) {
+    if (!_id) {
       throw '_id is not provided';
     }
 
@@ -392,31 +396,31 @@ Authing.prototype = {
       authSuccess: false,
       token: null
     };
-    if(configs.inBrowser) {
+    if (configs.inBrowser) {
       localStorage.removeItem('_authing_token');
     }
 
     return this.update({
       _id: _id,
       tokenExpiredAt: 0
-    }).catch(function(error) {
+    }).catch(function (error) {
       throw error;
     });
 
   },
 
-  user: function(options) {
+  user: function (options) {
     this.haveAccess();
-    if(!options) {
+    if (!options) {
       throw 'options is not provided';
     }
-    if(!options.id) {
+    if (!options.id) {
       throw 'id in options is not provided';
     }
     options.registerInClient = this.opts.clientId;
-    
+
     var client = this._chooseClient();
-    
+
     return client.query({
       query: `query user($id: String!, $registerInClient: String!){
         user(id: $id, registerInClient: $registerInClient) {
@@ -427,6 +431,7 @@ Authing.prototype = {
           nickname
           company
           photo
+          phone
           browser
           registerInClient
           registerMethod
@@ -444,14 +449,14 @@ Authing.prototype = {
       }
       `,
       variables: options
-    }).then(function(res) {
+    }).then(function (res) {
       return res.data.user;
-    }).catch(function(error) {
+    }).catch(function (error) {
       throw error;
     });
   },
 
-  list: function(page, count) {
+  list: function (page, count) {
 
     this.haveAccess();
 
@@ -476,6 +481,7 @@ Authing.prototype = {
               nickname
               company
               photo
+              phone
               browser
               password
               registerInClient
@@ -526,20 +532,20 @@ Authing.prototype = {
         }
       `,
       variables: options
-    }).then(function(res) {
+    }).then(function (res) {
       return res.data.users;
-    }).catch(function(error) {
+    }).catch(function (error) {
       throw error;
     });
   },
 
-  remove: function(_id, operator) {
+  remove: function (_id, operator) {
 
     var self = this;
 
     this.haveAccess();
 
-    if(!_id) {
+    if (!_id) {
       throw '_id is not provided';
     }
 
@@ -556,24 +562,24 @@ Authing.prototype = {
         registerInClient: self.opts.clientId,
         operator
       }
-    }).then(function(res) {
+    }).then(function (res) {
       return res.data.removeUsers;
-    }).catch(function(error) {
+    }).catch(function (error) {
       throw error;
-    }); 
+    });
 
   },
 
-  _uploadAvatar: function(options) {
+  _uploadAvatar: function (options) {
     var client = this._chooseClient();
     return client.query({
       query: `query qiNiuUploadToken {
         qiNiuUploadToken
       }`
-    }).then(function(data) {
+    }).then(function (data) {
       return data.data.qiNiuUploadToken;
-    }).then(function(token) {
-      if(!token) {
+    }).then(function (token) {
+      if (!token) {
         throw {
           graphQLErrors: [{
             message: {
@@ -590,19 +596,19 @@ Authing.prototype = {
         method: 'post',
         body: formData
       });
-    }).then(function(data){
+    }).then(function (data) {
       return data.json();
-    }).then(function(data) {
-      if(data.key) {
+    }).then(function (data) {
+      if (data.key) {
         options.photo = 'https://usercontents.authing.cn/' + data.key
       }
       return options;
-    }).catch(function(e) {
-      if(e.graphQLErrors) {
+    }).catch(function (e) {
+      if (e.graphQLErrors) {
         throw e;
       }
       throw {
-        graphQLErrors:[{
+        graphQLErrors: [{
           message: {
             message: e
           }
@@ -611,22 +617,22 @@ Authing.prototype = {
     })
   },
 
-  update: function(options) {
+  update: function (options) {
 
     var self = this;
 
     this.haveAccess();
 
-    if(!options) {
+    if (!options) {
       throw 'options is not provided';
     }
 
-    if(!options._id) {
+    if (!options._id) {
       throw '_id in options is not provided';
     }
 
-    if(options.password) {
-      if(!options.oldPassword) {
+    if (options.password) {
+      if (!options.oldPassword) {
         throw 'oldPasswordin options is not provided'
       }
       options.password = _encryption(options.password);
@@ -635,7 +641,7 @@ Authing.prototype = {
 
     options['registerInClient'] = self.opts.clientId;
 
-    var 
+    var
       keyTypeList = {
         _id: 'String!',
         email: 'String',
@@ -644,7 +650,7 @@ Authing.prototype = {
         nickname: 'String',
         company: 'String',
         photo: 'String',
-	oauth: 'String',
+        phone: 'String',
         browser: 'String',
         password: 'String',
         oldPassword: 'String',
@@ -665,6 +671,7 @@ Authing.prototype = {
         nickname
         company
         photo
+        phone
         browser
         registerInClient
         registerMethod
@@ -682,8 +689,8 @@ Authing.prototype = {
       var _args = [],
         _argsFiller = [],
         _argsString = '';
-      for(var key in options) {
-        if(keyTypeList[key]) {
+      for (var key in options) {
+        if (keyTypeList[key]) {
           _args.push('$' + key + ': ' + keyTypeList[key]);
           _argsFiller.push(key + ': $' + key);
         }
@@ -698,10 +705,10 @@ Authing.prototype = {
 
     var client = this._chooseClient();
 
-    if(options.photo) {
+    if (options.photo) {
       var photo = options.photo;
-      if(typeof photo !== 'string') {
-        return this._uploadAvatar(options).then(function(options) {
+      if (typeof photo !== 'string') {
+        return this._uploadAvatar(options).then(function (options) {
           var _arg = generateArgs(options);
           return client.mutate({
             mutation: `
@@ -715,9 +722,9 @@ Authing.prototype = {
             `,
             variables: options
           })
-        }).then(function(res) {
+        }).then(function (res) {
           return res.data.updateUser;
-        }).catch(function(error) {
+        }).catch(function (error) {
           throw error;
         });
       }
@@ -734,37 +741,37 @@ Authing.prototype = {
         }
       `,
       variables: options
-    }).then(function(res) {
+    }).then(function (res) {
       return res.data.updateUser;
-    }).catch(function(error) {
+    }).catch(function (error) {
       throw error;
-    }); 
-  },
-
-  readOAuthList: function() {
-    var self = this;
-    return this._readOAuthList()
-    .then(function(list) {
-      if(list) {
-        return list.filter(function(item) {
-          return item.enabled;
-        });
-      }else {
-        throw {
-          message: '获取OAuth列表失败，原因未知'
-        }
-      }
     });
   },
-  
-  sendResetPasswordEmail: function(options) {
-    if(!options) {
+
+  readOAuthList: function () {
+    var self = this;
+    return this._readOAuthList()
+      .then(function (list) {
+        if (list) {
+          return list.filter(function (item) {
+            return item.enabled;
+          });
+        } else {
+          throw {
+            message: '获取OAuth列表失败，原因未知'
+          }
+        }
+      });
+  },
+
+  sendResetPasswordEmail: function (options) {
+    if (!options) {
       throw 'options is not provided';
     }
-    if(!options.email) {
+    if (!options.email) {
       throw 'email in options is not provided';
     }
-  
+
     options.client = this.opts.clientId;
     return this.UserClient.mutate({
       mutation: `
@@ -782,23 +789,23 @@ Authing.prototype = {
         }
       `,
       variables: options
-    }).then(function(res) {
+    }).then(function (res) {
       return res.data.sendResetPasswordEmail;
-    }).catch(function(error) {
+    }).catch(function (error) {
       throw error;
     });
-    
+
   },
 
-  verifyResetPasswordVerifyCode: function(options) {
-    
-    if(!options) {
+  verifyResetPasswordVerifyCode: function (options) {
+
+    if (!options) {
       throw 'options is not provided';
     }
-    if(!options.email) {
+    if (!options.email) {
       throw 'email in options is not provided';
     }
-    if(!options.verifyCode) {
+    if (!options.verifyCode) {
       throw 'verifyCode in options is not provided';
     }
     options.client = this.opts.clientId;
@@ -820,25 +827,28 @@ Authing.prototype = {
         }
       `,
       variables: options
-    }).then(function(res) {
+    }).then(function (res) {
       return res.data.verifyResetPasswordVerifyCode;
-    }).catch(function(error) {
+    }).catch(function (error) {
       throw error;
     });
-    
+
   },
 
-  changePassword: function(options) {
-    if(!options) {
+  changePassword: function (options) {
+    if (!options) {
       throw 'options is not provided';
     }
-    if(!options.email) {
+    if (!options.email) {
       throw 'email in options is not provided';
     }
-    if(!options.password) {
+    if (!options.client) {
+      throw 'client in options is not provided';
+    }
+    if (!options.password) {
       throw 'password in options is not provided';
     }
-    if(!options.verifyCode) {
+    if (!options.verifyCode) {
       throw 'verifyCode in options is not provided';
     }
     options.client = this.opts.clientId;
@@ -880,15 +890,15 @@ Authing.prototype = {
         }
       `,
       variables: options
-    }).then(function(res) {
+    }).then(function (res) {
       return res.data.changePassword;
-    }).catch(function(error) {
+    }).catch(function (error) {
       throw error;
     });
   },
 
-  sendVerifyEmail: function(options) {
-    if(!options.email) {
+  sendVerifyEmail: function (options) {
+    if (!options.email) {
       throw 'email in options is not provided';
     }
 
@@ -911,27 +921,57 @@ Authing.prototype = {
         }
       `,
       variables: options
-    }).then(function(res) {
+    }).then(function (res) {
       return res.data.sendVerifyEmail;
-    }).catch(function(error) {
+    }).catch(function (error) {
       throw error;
     });
   },
 
-  grantWxapp: function(code, random) {
+  grantWxapp: function (code, random) {
     var self = this;
     var clientId = self.opts.clientId || '';
-    return new Promise(function(resolve, reject) {
+    return new Promise(function (resolve, reject) {
       wx.request({
-        url: `https://oauth.authing.cn/oauth/wxapp/grant/?clientId=${clientId}&alias=wxapp&code=${code}&random=${random}`,
+        url: `https://oauth.authing.cn/oauth/wxapp/grant/?alias=wxapp&code=${code}&random=${random}&enableFetchPhone=true&useSelfWxapp=true`,
+        //&useSelfWxapp=false
         method: 'get',
         // header: obj.header || mutateObj.header,
-        complete: function(res) {
+        complete: function (res) {
           errorHandler(resolve, reject, res);
-        }            
+        }
+      });
+    });
+  },
+
+  authWxapp: function (random, data) {
+    var self = this;
+    return new Promise(function (resolve, reject) {
+      wx.request({
+        url: `https://oauth.authing.cn/oauth/wxapp/redirect?random=${random}`,
+        method: 'post',
+        data: data,
+        complete: function (res) {
+          errorHandler(resolve, reject, res);
+        }
+      });
+    });
+  },
+
+  getPhone: function (clientID, data) {
+    var self = this;
+    return new Promise(function (resolve, reject) {
+      wx.request({
+        url: `https://oauth.authing.cn/oauth/wxapp/phone/${clientID}?useSelfWxapp=true`,
+        method: 'post',
+        data: data,
+        complete: function (res) {
+          errorHandler(resolve, reject, res);
+        }
       });
     });
   }
+
 }
 
 module.exports = Authing
