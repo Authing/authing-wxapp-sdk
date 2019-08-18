@@ -1,6 +1,9 @@
 # authing-wxapp-sdk（Authing SDK for 小程序）
 
 > 相关接口和 JavaScript 版本相同：[https://github.com/Authing/authing-js-sdk](https://github.com/Authing/authing-js-sdk)
+> 更新时间： 2019-8-16
+> 本次更新： 新增获取手机号的 getPhone 方法，升级 grantWxapp，authWxapp 方法。详见开发文档。
+
 
 [![Watch the video](https://usercontents.authing.cn/20180528-184211@2x.png)](https://usercontents.authing.cn/wxapp-sdk-demo.mp4)
 
