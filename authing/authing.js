@@ -3,7 +3,7 @@ var GraphQL = gql.GraphQL;
 var configs = require('./configs.js');
 var RSA = require('./utils/wxapp_rsa.js');
 
-var _encryption = function (paw) {
+var _encryption = function(paw) {
   var encrypt_rsa = new RSA.RSAKey();
   encrypt_rsa = RSA.KEYUTIL.getKey(configs.openSSLSecret);
   var encStr = encrypt_rsa.encrypt(paw);
@@ -11,7 +11,7 @@ var _encryption = function (paw) {
   return encStr.toString();
 };
 
-var errorHandler = function (resolve, reject, res) {
+var errorHandler = function(resolve, reject, res) {
   var retData = res.data ? res.data : {
     code: 200
   };
@@ -23,19 +23,13 @@ var errorHandler = function (resolve, reject, res) {
   }
 }
 
-var Authing = function (opts) {
-  var self = this;
+var Authing = function(opts) {
 
   if (!opts.pureUsing) {
 
     if (!opts.clientId) {
       throw 'clientId is not provided';
     }
-
-    if (!opts.secret) {
-      throw 'app secret is not provided';
-    }
-
   }
 
   if (opts.host) {
@@ -45,11 +39,6 @@ var Authing = function (opts) {
 
   this.opts = opts;
 
-  this.ownerAuth = {
-    authed: false,
-    authSuccess: false,
-    token: null
-  }
   this.userAuth = {
     authed: false,
     authSuccess: false,
@@ -57,37 +46,22 @@ var Authing = function (opts) {
   }
 
   this.initUserClient();
-  this.initOwnerClient();
   this.initOAuthClient();
 
   if (opts.pureUsing) {
     self.ownerAuth.authed = true;
     self.ownerAuth.authSuccess = false;
-    return this;
   }
 
-  return this._auth().then(function (token) {
-    if (token) {
-      self.initOwnerClient(token);
-      self._loginFromLocalStorage();
-    } else {
-      self.ownerAuth.authed = true;
-      self.ownerAuth.authSuccess = false;
-      throw 'auth failed, please check your secret and client ID.';
-    }
-    return self;
-  }).catch(function (error) {
-    self.ownerAuth.authed = true;
-    self.ownerAuth.authSuccess = false;
-    throw 'auth failed: ' + error.message;
-  });
+  return this;
+
 }
 
 Authing.prototype = {
 
   constructor: Authing,
 
-  _initClient: function (token) {
+  _initClient: function(token) {
     if (token) {
       return new GraphQL({
         url: configs.services.user.host,
@@ -102,7 +76,7 @@ Authing.prototype = {
     }
   },
 
-  initUserClient: function (token) {
+  initUserClient: function(token) {
     if (token) {
       this.userAuth = {
         authed: true,
@@ -116,24 +90,14 @@ Authing.prototype = {
     this.UserClient = this._initClient(token);
   },
 
-  initOwnerClient: function (token) {
-    if (token) {
-      this.ownerAuth = {
-        authed: true,
-        authSuccess: true,
-        token: token
-      };
-    }
-    this.ownerClient = this._initClient(token);
-  },
 
-  initOAuthClient: function () {
+  initOAuthClient: function() {
     this.OAuthClient = new GraphQL({
       url: configs.services.oauth.host
     }, true);
   },
 
-  _auth: function () {
+  _auth: function() {
 
     if (!this._AuthService) {
       this._AuthService = new GraphQL({
@@ -149,13 +113,13 @@ Authing.prototype = {
     var self = this;
 
     return this._AuthService.query({
-      query: `
+        query: `
         query {
           getAccessTokenByAppSecret(secret: "${options.secret}", clientId:  "${options.clientId}")
         }
       `,
-    })
-      .then(function (data) {
+      })
+      .then(function(data) {
         self._AuthService = new GraphQL({
           url: configs.services.user.host,
           header: {
@@ -167,7 +131,7 @@ Authing.prototype = {
       });
   },
 
-  _loginFromLocalStorage: function () {
+  _loginFromLocalStorage: function() {
     var self = this;
     if (configs.inBrowser) {
       var _authing_token = wx.getStorageSync('_authing_token');
@@ -177,7 +141,7 @@ Authing.prototype = {
     }
   },
 
-  checkLoginStatus: function () {
+  checkLoginStatus: function() {
     var self = this;
     if (!self.userAuth.authSuccess) {
       return Promise.resolve({
@@ -194,71 +158,22 @@ Authing.prototype = {
           message
         }
       }`
-    }).then(function (res) {
+    }).then(function(res) {
       return res.data.checkLoginStatus;
-    }).catch(function (error) {
+    }).catch(function(error) {
       throw error;
     });
   },
 
-  _readOAuthList: function () {
-
-    var self = this;
-
-    this.haveAccess();
-
-    if (!this._OAuthService) {
-      self._OAuthService = new GraphQL({
-        url: configs.services.oauth.host,
-        header: {
-          authorization: 'Bearer ' + self.ownerAuth.token,
-        }
-      }, true);
-    }
-
-    var self = this;
-
-    return this._OAuthService.query({
-      query: `
-        query getOAuthList($clientId: String!) {
-          ReadOauthList(clientId: $clientId) {
-              _id
-              name
-              image
-              description
-              enabled
-              client
-              user
-              url
-          }
-        }
-      `,
-      variables: {
-        clientId: self.opts.clientId
-      }
-    })
-      .then(function (res) {
-        return res.data.ReadOauthList;
-      }).catch(function (error) {
-        throw error;
-      });
-  },
-
-  haveAccess: function () {
-    if (!this.ownerAuth.authSuccess) {
-      throw 'have no access, please check your secret and client ID.';
-    }
-  },
-
-  _chooseClient: function () {
+  _chooseClient: function() {
     if (this.userAuth.authSuccess) {
       return this.UserClient;
     }
     return this.ownerClient;
   },
 
-  _login: function (options) {
-
+  _login: function(options) {
+    const self = this;
     if (!options) {
       throw 'options is not provided.';
     }
@@ -268,8 +183,6 @@ Authing.prototype = {
     if (options.password) {
       options.password = _encryption(options.password);
     }
-
-    this.haveAccess();
 
     return this.UserClient.mutate({
       mutation: `
@@ -295,28 +208,26 @@ Authing.prototype = {
         }
       `,
       variables: options
-    }).then(function (res) {
+    }).then(function(res) {
+      self.initUserClient(res.data.login.token)
       return res.data.login;
     });
-
   },
 
-  login: function (options) {
+  login: function(options) {
     let self = this;
-    return this._login(options).then(function (user) {
+    return this._login(options).then(function(user) {
       if (user) {
         self.initUserClient(user.token);
       }
       return user;
-    }).catch(function (error) {
+    }).catch(function(error) {
       throw error;
     });
   },
 
-  register: function (options) {
-
-    this.haveAccess();
-
+  register: function(options) {
+    const self = this;
     if (!options) {
       throw 'options is not provided';
     }
@@ -328,7 +239,7 @@ Authing.prototype = {
     }
 
     return this.UserClient.mutate({
-      mutation: `
+        mutation: `
         mutation register(
           $unionid: String,
             $email: String, 
@@ -372,18 +283,16 @@ Authing.prototype = {
             }
         }
       `,
-      variables: options
-    })
-      .then(function (res) {
+        variables: options
+      })
+      .then(function(res) {
         return res.data.register;
-      }).catch(function (error) {
+      }).catch(function(error) {
         throw error;
       });
   },
 
-  logout: function (_id) {
-
-    this.haveAccess();
+  logout: function(_id) {
 
     if (!_id) {
       throw '_id is not provided';
@@ -403,14 +312,13 @@ Authing.prototype = {
     return this.update({
       _id: _id,
       tokenExpiredAt: 0
-    }).catch(function (error) {
+    }).catch(function(error) {
       throw error;
     });
 
   },
 
-  user: function (options) {
-    this.haveAccess();
+  user: function(options) {
     if (!options) {
       throw 'options is not provided';
     }
@@ -449,136 +357,22 @@ Authing.prototype = {
       }
       `,
       variables: options
-    }).then(function (res) {
+    }).then(function(res) {
       return res.data.user;
-    }).catch(function (error) {
+    }).catch(function(error) {
       throw error;
     });
   },
 
-  list: function (page, count) {
-
-    this.haveAccess();
-
-    page = page || 1;
-    count = count || 10;
-
-    var options = {
-      registerInClient: this.opts.clientId,
-      page: page,
-      count: count
-    }
-
-    return this.ownerClient.query({
-      query: `query users($registerInClient: String, $page: Int, $count: Int){
-          users(registerInClient: $registerInClient, page: $page, count: $count) {
-            totalCount
-            list {
-              _id
-              email
-              emailVerified
-              username
-              nickname
-              company
-              photo
-              phone
-              browser
-              password
-              registerInClient
-              token
-              tokenExpiredAt
-              loginsCount
-              lastLogin
-              lastIP
-              signedUp
-              blocked
-              isDeleted
-              group {
-                _id
-                name
-                descriptions
-                createdAt
-              }
-              clientType {
-                _id
-                name
-                description
-                image
-                example
-              }
-              userLocation {
-                _id
-                when
-                where
-              }
-              userLoginHistory {
-                totalCount
-                list{
-                  _id
-                  when
-                  success
-                  ip
-                  result
-                }
-              }
-              systemApplicationType {
-                _id
-                name
-                descriptions
-                price
-              }
-            }
-          }
-        }
-      `,
-      variables: options
-    }).then(function (res) {
-      return res.data.users;
-    }).catch(function (error) {
-      throw error;
-    });
-  },
-
-  remove: function (_id, operator) {
-
-    var self = this;
-
-    this.haveAccess();
-
-    if (!_id) {
-      throw '_id is not provided';
-    }
-
-    return this.ownerClient.mutate({
-      mutation: `
-        mutation removeUsers($ids: [String], $registerInClient: String, $operator: String){
-          removeUsers(ids: $ids, registerInClient: $registerInClient, operator: $operator) {
-            _id
-          }
-        }
-      `,
-      variables: {
-        ids: [_id],
-        registerInClient: self.opts.clientId,
-        operator
-      }
-    }).then(function (res) {
-      return res.data.removeUsers;
-    }).catch(function (error) {
-      throw error;
-    });
-
-  },
-
-  _uploadAvatar: function (options) {
+  _uploadAvatar: function(options) {
     var client = this._chooseClient();
     return client.query({
       query: `query qiNiuUploadToken {
         qiNiuUploadToken
       }`
-    }).then(function (data) {
+    }).then(function(data) {
       return data.data.qiNiuUploadToken;
-    }).then(function (token) {
+    }).then(function(token) {
       if (!token) {
         throw {
           graphQLErrors: [{
@@ -596,14 +390,14 @@ Authing.prototype = {
         method: 'post',
         body: formData
       });
-    }).then(function (data) {
+    }).then(function(data) {
       return data.json();
-    }).then(function (data) {
+    }).then(function(data) {
       if (data.key) {
         options.photo = 'https://usercontents.authing.cn/' + data.key
       }
       return options;
-    }).catch(function (e) {
+    }).catch(function(e) {
       if (e.graphQLErrors) {
         throw e;
       }
@@ -617,11 +411,9 @@ Authing.prototype = {
     })
   },
 
-  update: function (options) {
+  update: function(options) {
 
     var self = this;
-
-    this.haveAccess();
 
     if (!options) {
       throw 'options is not provided';
@@ -704,11 +496,10 @@ Authing.prototype = {
     }
 
     var client = this._chooseClient();
-
     if (options.photo) {
       var photo = options.photo;
       if (typeof photo !== 'string') {
-        return this._uploadAvatar(options).then(function (options) {
+        return this._uploadAvatar(options).then(function(options) {
           var _arg = generateArgs(options);
           return client.mutate({
             mutation: `
@@ -722,9 +513,9 @@ Authing.prototype = {
             `,
             variables: options
           })
-        }).then(function (res) {
+        }).then(function(res) {
           return res.data.updateUser;
-        }).catch(function (error) {
+        }).catch(function(error) {
           throw error;
         });
       }
@@ -741,30 +532,14 @@ Authing.prototype = {
         }
       `,
       variables: options
-    }).then(function (res) {
+    }).then(function(res) {
       return res.data.updateUser;
-    }).catch(function (error) {
+    }).catch(function(error) {
       throw error;
     });
   },
 
-  readOAuthList: function () {
-    var self = this;
-    return this._readOAuthList()
-      .then(function (list) {
-        if (list) {
-          return list.filter(function (item) {
-            return item.enabled;
-          });
-        } else {
-          throw {
-            message: '获取OAuth列表失败，原因未知'
-          }
-        }
-      });
-  },
-
-  sendResetPasswordEmail: function (options) {
+  sendResetPasswordEmail: function(options) {
     if (!options) {
       throw 'options is not provided';
     }
@@ -789,15 +564,15 @@ Authing.prototype = {
         }
       `,
       variables: options
-    }).then(function (res) {
+    }).then(function(res) {
       return res.data.sendResetPasswordEmail;
-    }).catch(function (error) {
+    }).catch(function(error) {
       throw error;
     });
 
   },
 
-  verifyResetPasswordVerifyCode: function (options) {
+  verifyResetPasswordVerifyCode: function(options) {
 
     if (!options) {
       throw 'options is not provided';
@@ -827,15 +602,15 @@ Authing.prototype = {
         }
       `,
       variables: options
-    }).then(function (res) {
+    }).then(function(res) {
       return res.data.verifyResetPasswordVerifyCode;
-    }).catch(function (error) {
+    }).catch(function(error) {
       throw error;
     });
 
   },
 
-  changePassword: function (options) {
+  changePassword: function(options) {
     if (!options) {
       throw 'options is not provided';
     }
@@ -890,14 +665,14 @@ Authing.prototype = {
         }
       `,
       variables: options
-    }).then(function (res) {
+    }).then(function(res) {
       return res.data.changePassword;
-    }).catch(function (error) {
+    }).catch(function(error) {
       throw error;
     });
   },
 
-  sendVerifyEmail: function (options) {
+  sendVerifyEmail: function(options) {
     if (!options.email) {
       throw 'email in options is not provided';
     }
@@ -921,51 +696,51 @@ Authing.prototype = {
         }
       `,
       variables: options
-    }).then(function (res) {
+    }).then(function(res) {
       return res.data.sendVerifyEmail;
-    }).catch(function (error) {
+    }).catch(function(error) {
       throw error;
     });
   },
 
-  grantWxapp: function (code, random) {
+  grantWxapp: function(code, random) {
     var self = this;
     var clientId = self.opts.clientId || '';
-    return new Promise(function (resolve, reject) {
+    return new Promise(function(resolve, reject) {
       wx.request({
         url: `https://oauth.authing.cn/oauth/wxapp/grant/?alias=wxapp&code=${code}&random=${random}&enableFetchPhone=true&useSelfWxapp=true`,
         //&useSelfWxapp=false
         method: 'get',
         // header: obj.header || mutateObj.header,
-        complete: function (res) {
+        complete: function(res) {
           errorHandler(resolve, reject, res);
         }
       });
     });
   },
 
-  authWxapp: function (random, data) {
+  authWxapp: function(random, data) {
     var self = this;
-    return new Promise(function (resolve, reject) {
+    return new Promise(function(resolve, reject) {
       wx.request({
         url: `https://oauth.authing.cn/oauth/wxapp/redirect?random=${random}`,
         method: 'post',
         data: data,
-        complete: function (res) {
+        complete: function(res) {
           errorHandler(resolve, reject, res);
         }
       });
     });
   },
 
-  getPhone: function (clientID, data) {
+  getPhone: function(clientID, data) {
     var self = this;
-    return new Promise(function (resolve, reject) {
+    return new Promise(function(resolve, reject) {
       wx.request({
         url: `https://oauth.authing.cn/oauth/wxapp/phone/${clientID}?useSelfWxapp=true`,
         method: 'post',
         data: data,
-        complete: function (res) {
+        complete: function(res) {
           errorHandler(resolve, reject, res);
         }
       });
