@@ -745,6 +745,28 @@ Authing.prototype = {
         }
       });
     });
+  },
+
+  getVerificationCode: function(phone) {
+    if (!phone) {
+      throw "phone is not provided";
+    }
+
+    const url = `${configs.services.user.host.replace(
+      "/graphql",
+      ""
+    )}/send_smscode/${phone}/${this.opts.clientId}`;
+    console.log(url)
+    return new Promise(function(resolve, reject) {
+      wx.request({
+        url: url,
+        method: "GET",
+        complete: function(res) {
+          errorHandler(resolve, reject, res)
+        }
+      })
+    })
+
   }
 
 }

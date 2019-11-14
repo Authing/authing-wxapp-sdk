@@ -7,10 +7,19 @@ Page({
     const password = "123456!";
     const clientId = '5b1757e682f4ce00014fdd3e';
 
+    // 初始化
     let auth = new Authing({
       clientId: clientId,
     });
 
+    // 发送短信验证码
+    auth.getVerificationCode("17670416754").then(result => {
+      console.log(result)
+    }).catch(err => {
+      console.log(err)
+    })
+
+    // 注册登录逻辑
     auth.register({
       email: email,
       password: password
