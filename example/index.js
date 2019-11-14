@@ -26,6 +26,7 @@ Page({
     },
 
     defaultAvatar: "https://usercontents.authing.cn/wxapp/default-avatar.png",
+    newNickname: null,
     userinfo: null,
     userinfoMd: `
 \`\`\`
@@ -45,7 +46,9 @@ Page({
     displayUserinfo: "default",
     displayEmailRegister: "none",
     displayEmailLogin: "none",
-    displayPhoneLogin: "none"
+    displayPhoneLogin: "none",
+
+    showNicknameInput: false
   },
 
   geneUserInfoMd: function(userinfo) {
@@ -95,10 +98,14 @@ ${JSON.stringify(userinfo, null, 4)}
           phoneCode: value
         })
       })
+    } else if (id === "nickname") {
+      this.setData({
+        newNickname: value
+      })
     }
   },
 
-  showDialog: function (title, msg) {
+  showDialog: function(title, msg) {
     this.setData({
       showDialog: true,
       dialogTitle: title,
@@ -106,7 +113,7 @@ ${JSON.stringify(userinfo, null, 4)}
     })
   },
 
-  closeDialog: function () {
+  closeDialog: function() {
     this.setData({
       showDialog: false,
       dialogMsg: "",
@@ -114,28 +121,27 @@ ${JSON.stringify(userinfo, null, 4)}
     })
   },
 
-  onToggleClick: function (e) {
+  onToggleClick: function(e) {
     const self = this;
-    console.log(e)
     const id = e.currentTarget.id;
     const mo = id.replace('toggle-', '')
     const handlers = {
-      "emailRegister": function () {
+      "emailRegister": function() {
         self.setData({
           displayEmailRegister: self.data.displayEmailRegister === "none" ? "default" : "none"
         })
       },
-      "emailLogin": function () {
+      "emailLogin": function() {
         self.setData({
           displayEmailLogin: self.data.displayEmailLogin === "none" ? "default" : "none"
         })
       },
-      "userinfo": function () {
+      "userinfo": function() {
         self.setData({
           displayUserinfo: self.data.displayUserinfo === "none" ? "default" : "none"
         })
       },
-      "phoneLogin": function () {
+      "phoneLogin": function() {
         self.setData({
           displayPhoneLogin: self.data.displayPhoneLogin === "none" ? "default" : "none"
         })
@@ -208,7 +214,6 @@ ${JSON.stringify(userinfo, null, 4)}
     const self = this;
     const phone = this.data.phoneLoginFormData.phone
     const phoneCode = this.data.phoneLoginFormData.phoneCode
-    console.log(this.data)
     if (!/^1[3456789]\d{9}$/.test(phone)) {
       this.showDialog("手机号登录失败", "请检查手机号格式！")
       return
@@ -230,6 +235,39 @@ ${JSON.stringify(userinfo, null, 4)}
       })
     }).catch(err => {
       self.showDialog("手机号登录失败", err.message)
+    })
+  },
+
+  showNicknameInput: function(e) {
+    this.setData({
+      showNicknameInput: true
+    })
+  },
+
+  updateNickname: function() {
+    const self = this;
+    const userId = this.data.userinfo._id;
+    const nickname = this.data.newNickname;
+    if (!userId) {
+      this.showDialog("修改昵称失败", "请先登录！")
+      return
+    }
+    if (!nickname) {
+      this.showDialog("修改昵称失败", "请输入昵称！")
+      return
+    }
+    authing.update({
+      _id: userId,
+      nickname: nickname
+    }).then(userinfo => {
+      this.setData({
+        userinfo: userinfo,
+        userinfoMd: self.geneUserInfoMd(userinfo),
+        showNicknameInput: false
+      })
+      wx.showToast({
+        title: '修改成功！',
+      })
     })
   },
 

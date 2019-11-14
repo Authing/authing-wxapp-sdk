@@ -7,6 +7,7 @@
     "mp-checkbox": "../components/checkbox/checkbox",
     "mp-checkbox-group": "../components/checkbox-group/checkbox-group",
     "mp-form": "../components/form/form",
+    "mp-icon": "../components/icon/icon",
     "wemark": "../components/wemark/wemark"
   }
 }

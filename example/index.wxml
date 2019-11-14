@@ -8,7 +8,12 @@
         <image src="{{ userinfo.photo || defaultAvatar }}" style="width: 50px; height: 50px; display: block;border-radius:25px;box-shadow: .5px .5px gray"></image>
       </view>
       <view style="display: flex; justify-content: center; margin-top: 11px">
-        <text wx:if="{{userinfo}}">{{userinfo.nickname || userinfo.username || userinfo.email}}</text>
+        <view wx:if="{{userinfo}}" style="display: flex; align-items: center">
+          <input wx:if="{{showNicknameInput}}" value="{{userinfo.nickname || userinfo.username || userinfo.email}}" placeholder="输入修改的昵称" style="width:150px" bindinput="formInputChange" id="nickname"></input>
+          <text wx:else>{{userinfo.nickname || userinfo.username || userinfo.email}}</text>
+          <mp-icon wx:if="{{showNicknameInput}}" type="field" icon="done" color="black" size="{{15}}" style="margin-bottom:2px;margin-left:5px" bindtap="updateNickname"></mp-icon>
+          <mp-icon wx:else type="field" icon="pencil" color="black" size="{{15}}" style="margin-bottom:2px;margin-left:5px" bindtap="showNicknameInput"></mp-icon>
+        </view>
         <text wx:else>暂未登录</text>
       </view>
     </view>
