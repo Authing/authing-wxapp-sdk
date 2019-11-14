@@ -20,6 +20,10 @@ Page({
       email: "",
       password: ""
     },
+    phoneLoginFormData: {
+      phone: "",
+      phoneCode: ""
+    },
 
     defaultAvatar: "https://usercontents.authing.cn/wxapp/default-avatar.png",
     userinfo: null,
@@ -41,6 +45,7 @@ Page({
     displayUserinfo: "default",
     displayEmailRegister: "none",
     displayEmailLogin: "none",
+    displayPhoneLogin: "none"
   },
 
   geneUserInfoMd: function(userinfo) {
@@ -64,6 +69,30 @@ ${JSON.stringify(userinfo, null, 4)}
       this.setData({
         emailRegisterFormData: Object.assign(this.data.emailRegisterFormData, {
           password: value
+        })
+      })
+    } else if (id === "emailLogin") {
+      this.setData({
+        emailLoginFormData: Object.assign(this.data.emailLoginFormData, {
+          email: value
+        })
+      })
+    } else if (id === "passwordLogin") {
+      this.setData({
+        emailLoginFormData: Object.assign(this.data.emailLoginFormData, {
+          password: value
+        })
+      })
+    } else if (id === "phone") {
+      this.setData({
+        phoneLoginFormData: Object.assign(this.data.phoneLoginFormData, {
+          phone: value
+        })
+      })
+    } else if (id === "phoneCode") {
+      this.setData({
+        phoneLoginFormData: Object.assign(this.data.phoneLoginFormData, {
+          phoneCode: value
         })
       })
     }
@@ -148,9 +177,31 @@ ${JSON.stringify(userinfo, null, 4)}
         self.setData({
           displayUserinfo: self.data.displayUserinfo === "none" ? "default" : "none"
         })
+      },
+      "phoneLogin": function() {
+        self.setData({
+          displayPhoneLogin: self.data.displayPhoneLogin === "none" ? "default" : "none"
+        })
       }
     }
     handlers[mo]()
+  },
+
+  sendPhoneCode: function() {
+    const self = this;
+    const phone = this.data.phoneLoginFormData.phone
+    if (!/^1[3456789]\d{9}$/.test(phone)) {
+      this.showDialog("发送验证码失败", "请检查手机号格式！")
+      return
+    }
+
+    authing.getVerificationCode(phone).then(result => {
+      wx.showToast({
+        title: '发送成功！',
+      })
+    }).catch(err => {
+      self.showDialog("发送验证码失败", err.message)
+    })
   },
 
   test: function() {

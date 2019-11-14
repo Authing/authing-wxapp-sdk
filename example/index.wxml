@@ -72,6 +72,30 @@
         </view>
       </view>
 
+      <view class="item">
+        <input type="checkbox" />
+        <label for="box-1" bindtap="onToggleClick" id="toggle-phoneLogin">使用手机号登录</label>
+        <view style="display: {{displayPhoneLogin}}">
+          <view style="box-shadow:0px 0px 10px rgba(0, 0, 0, 0.1)">
+            <mp-form id="email-register" models="{{phoneLoginFormData}}">
+              <mp-cells>
+                <mp-cell title="手机号" ext-class="">
+                  <input bindinput="formInputChange" id="phone" value="{{phoneLoginFormData.phone}}" class="weui-input" placeholder="请输入手机号" />
+                </mp-cell>
+                <mp-cell title="验证码" ext-class="">
+                  <input bindinput="formInputChange" id="phoneCode" value="{{phoneLoginFormData.phoneCode}}" class="weui-input" placeholder="请输入验证码" />
+                  <view slot="footer" class="weui-vcode-btn" bindtap="sendPhoneCode">获取验证码</view>
+                </mp-cell>
+              </mp-cells>
+
+              <view style="margin-top: 11px">
+                <button class="weui-btn" type="default" bindtap="submitEmailLoginForm">确定</button>
+              </view>
+            </mp-form>
+          </view>
+        </view>
+      </view>
+
     </view>
     <mp-dialog title="{{dialogTitle}}" show="{{showDialog}}" bindbuttontap="closeDialog" buttons="{{oneButton}}">
       <view>{{dialogMsg}}</view>
