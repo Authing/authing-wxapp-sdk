@@ -6,6 +6,7 @@ Page({
     const email = Math.random().toString(36).substring(4) + "@test.com"
     const password = "123456!";
     const userPoolId = '5d9f78acb02d3e14484cfc37';
+    const phone = "17670416754"
 
     // 初始化
     let auth = new Authing({
@@ -14,13 +15,20 @@ Page({
     });
 
     // 发送短信验证码
-    auth.getVerificationCode("17670416754").then(result => {
+    auth.getVerificationCode(phone).then(result => {
       console.log(result)
     }).catch(err => {
       console.log(err)
     })
 
-
+    auth.loginByPhoneCode({
+      phone: phone,
+      phoneCode: "123456"
+    }).then(result => {
+      console.log(result)
+    }).catch(err => {
+      console.log(err)
+    })
 
     // 注册登录逻辑
     auth.register({
@@ -58,5 +66,7 @@ Page({
       console.log('登录失败!')
       console.log(error);
     });
+
+
   }
 });

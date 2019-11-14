@@ -166,13 +166,6 @@ Authing.prototype = {
     });
   },
 
-  _chooseClient: function() {
-    if (this.userAuth.authSuccess) {
-      return this.UserClient;
-    }
-    return this.ownerClient;
-  },
-
   _login: function(options) {
     const self = this;
     if (!options) {
@@ -328,9 +321,7 @@ Authing.prototype = {
     }
     options.registerInClient = this.userPoolId;
 
-    var client = this._chooseClient();
-
-    return client.query({
+    return this.UserClient.query({
       query: `query user($id: String!, $registerInClient: String!){
         user(id: $id, registerInClient: $registerInClient) {
           _id
@@ -366,8 +357,7 @@ Authing.prototype = {
   },
 
   _uploadAvatar: function(options) {
-    var client = this._chooseClient();
-    return client.query({
+    return this.UserClient.query({
       query: `query qiNiuUploadToken {
         qiNiuUploadToken
       }`
@@ -496,7 +486,6 @@ Authing.prototype = {
       }
     }
 
-    var client = this._chooseClient();
     if (options.photo) {
       var photo = options.photo;
       if (typeof photo !== 'string') {
@@ -522,7 +511,7 @@ Authing.prototype = {
       }
     }
     var _arg = generateArgs(options);
-    return client.mutate({
+    return this.UserClient.mutate({
       mutation: `
         mutation UpdateUser(${_arg._argsString}){
           updateUser(options: {
@@ -767,6 +756,56 @@ Authing.prototype = {
       })
     })
 
+  },
+
+  loginByPhoneCode: function(options) {
+    if (!options) {
+      throw Error("options is not provided.");
+    }
+    const variables = {
+      registerInClient: this.userPoolId,
+      phone: options.phone,
+      phoneCode: parseInt(options.phoneCode, 10)
+    };
+
+    return this.UserClient.mutate({
+      operationName: "login",
+      mutation: `mutation login($phone: String, $phoneCode: Int, $registerInClient: String!, $browser: String) {
+        login(phone: $phone, phoneCode: $phoneCode, registerInClient: $registerInClient, browser: $browser) {
+          _id
+          email
+          unionid
+          openid
+          emailVerified
+          username
+          nickname
+          phone
+          company
+          photo
+          browser
+          token
+          tokenExpiredAt
+          loginsCount
+          lastLogin
+          lastIP
+          signedUp
+          blocked
+          isDeleted
+        }
+    }`,
+      variables
+    }).then(res => {
+      console.log(res)
+      // 登录成功记录 token
+      if (res && res.token) {
+        self.initUserClient(res.data.login.token)
+        if (configs.inBrowser)
+          wx.setStorageSync('_authing_token', res.token);
+      }
+      return res;
+    }).catch(err => {
+      throw err
+    });
   }
 
 }
