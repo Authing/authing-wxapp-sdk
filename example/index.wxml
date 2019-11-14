@@ -101,6 +101,11 @@
         </view>
       </view>
 
+      <view class="item">
+        <input type="checkbox" />
+        <label for="box-1" bindtap="logout">点击退出登录</label>
+      </view>
+
     </view>
     <mp-dialog title="{{dialogTitle}}" show="{{showDialog}}" bindbuttontap="closeDialog" buttons="{{oneButton}}">
       <view>{{dialogMsg}}</view>

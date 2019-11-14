@@ -4,6 +4,12 @@ const authing = new Authing({
   userPoolId: userPoolId
 })
 
+const dontLoginMd = `
+\`\`\`
+暂无，请先登录！
+\`\`\`
+    `
+
 Page({
 
   data: {
@@ -13,7 +19,7 @@ Page({
 
     // bind form data
     emailRegisterFormData: {
-      email: "1066983132@qq.com",
+      email: Math.random().toString(36).substring(3) + "@test.com",
       password: "123456!"
     },
     emailLoginFormData: {
@@ -28,11 +34,7 @@ Page({
     defaultAvatar: "https://usercontents.authing.cn/wxapp/default-avatar.png",
     newNickname: null,
     userinfo: null,
-    userinfoMd: `
-\`\`\`
-暂无，请先登录！
-\`\`\`
-    `,
+    userinfoMd: dontLoginMd,
 
     // 反馈组件
     showDialog: false,
@@ -267,6 +269,23 @@ ${JSON.stringify(userinfo, null, 4)}
       })
       wx.showToast({
         title: '修改成功！',
+      })
+    })
+  },
+
+  logout: function() {
+    if (!this.data.userinfo) {
+      this.showDialog("退出登录失败", "请先登录")
+      return
+    }
+    const userId = this.data.userinfo._id;
+    authing.logout(userId).then(res => {
+      this.setData({
+        userinfo: null,
+        userinfoMd: dontLoginMd
+      })
+      wx.showToast({
+        title: '退出登录成功',
       })
     })
   },

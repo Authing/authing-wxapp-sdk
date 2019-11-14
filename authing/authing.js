@@ -300,12 +300,12 @@ Authing.prototype = {
       token: null
     };
     if (configs.inBrowser) {
-      localStorage.removeItem('_authing_token');
+      wx.removeStorageSync("_authing_token")
     }
 
     return this.update({
       _id: _id,
-      tokenExpiredAt: 0
+      tokenExpiredAt: '0'
     }).catch(function(error) {
       throw error;
     });
