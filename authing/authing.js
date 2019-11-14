@@ -759,6 +759,7 @@ Authing.prototype = {
   },
 
   loginByPhoneCode: function(options) {
+    const self = this;
     if (!options) {
       throw Error("options is not provided.");
     }
@@ -795,16 +796,69 @@ Authing.prototype = {
     }`,
       variables
     }).then(res => {
-      console.log(res)
       // 登录成功记录 token
-      if (res && res.token) {
-        self.initUserClient(res.data.login.token)
+      if (res && res.data) {
+        const token = res.data.login.token
+        self.initUserClient(token)
         if (configs.inBrowser)
-          wx.setStorageSync('_authing_token', res.token);
+          wx.setStorageSync('_authing_token', token);
       }
-      return res;
+      return res.data.login;
     }).catch(err => {
       throw err
+    });
+  },
+
+  loginByLDAP: function(options) {
+    if (!options) {
+      throw Error("options is not provided.");
+    }
+
+    options.clientId = this.userPoolId;
+
+    if (!options.password) {
+      throw Error("password is not provided.");
+    }
+
+    if (!options.username) {
+      throw Error("username is not provided.");
+    }
+
+    return this.OAuthClient.mutate({
+      operationName: "LoginByLDAP",
+      mutation: `mutation LoginByLDAP($username: String!, $password: String!, $clientId: String!, $browser: String) {
+    LoginByLDAP(username: $username, clientId: $clientId, password: $password, browser: $browser) {
+        _id
+        email
+        emailVerified
+        unionid
+        openid
+        oauth
+        registerMethod
+        username
+        nickname
+        company
+        photo
+        browser
+        token
+        tokenExpiredAt
+        loginsCount
+        lastLogin
+        lastIP
+        signedUp
+        blocked
+      }
+    }`,
+      variables: options
+    }).then(res => {
+      // 登录成功记录 token
+      if (res && res.data) {
+        const token = res.data.LoginByLDAP.token
+        self.initUserClient(token)
+        if (configs.inBrowser)
+          localStorage.setItem('_authing_token', oken)
+      }
+      return res.data.LoginByLDAP;
     });
   }
 
