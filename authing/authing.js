@@ -960,7 +960,6 @@ Authing.prototype = {
               access_token_expire
               id_token_expire
               cas_expire
-  
           }
           totalCount
       }

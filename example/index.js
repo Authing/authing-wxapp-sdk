@@ -1,11 +1,160 @@
 var Authing = require('../authing/authing.js');
+const userPoolId = '5dca605aad9757834f1e6877';
+const authing = new Authing({
+  userPoolId: userPoolId
+})
 
 Page({
+
+  data: {
+
+    // Authing 用户池 ID
+    userClientId: "",
+
+    // bind form data
+    emailRegisterFormData: {
+      email: "1066983132@qq.com",
+      password: "123456!"
+    },
+    emailLoginFormData: {
+      email: "",
+      password: ""
+    },
+
+    defaultAvatar: "https://usercontents.authing.cn/wxapp/default-avatar.png",
+    userinfo: null,
+    userinfoMd: `
+\`\`\`
+暂无，请先登录！
+\`\`\`
+    `,
+
+    // 反馈组件
+    showDialog: false,
+    dialogTitle: "",
+    dialogMsg: "",
+    oneButton: [{
+      text: '确定'
+    }],
+
+    // 控制几个模块的显示与否：
+    displayUserinfo: "default",
+    displayEmailRegister: "none",
+    displayEmailLogin: "none",
+  },
+
+  geneUserInfoMd: function(userinfo) {
+    return `
+\`\`\`
+${JSON.stringify(userinfo, null, 4)}
+\`\`\`
+`
+  },
+
+  formInputChange: function(e) {
+    const id = e.currentTarget.id
+    const value = e.detail.value
+    if (id === "email") {
+      this.setData({
+        emailRegisterFormData: Object.assign(this.data.emailRegisterFormData, {
+          email: value
+        })
+      })
+    } else if (id === "password") {
+      this.setData({
+        emailRegisterFormData: Object.assign(this.data.emailRegisterFormData, {
+          password: value
+        })
+      })
+    }
+  },
+
+  submitEmailRegisterForm: function(e) {
+    const self = this
+    const email = this.data.emailRegisterFormData.email;
+    const password = this.data.emailRegisterFormData.password;
+    authing.register({
+      email: email,
+      password: password
+    }).then(user => {
+      // 注册成功
+      self.setData({
+        emailLoginFormData: Object.assign(self.data.emailLoginFormData, {
+          email: email,
+          password: password
+        })
+      })
+      wx.showToast({
+        title: '注册成功！',
+      })
+    }).catch(err => {
+      this.showDialog("注册失败！", err.message)
+    })
+  },
+
+  submitEmailLoginForm: function(e) {
+    const self = this;
+    const email = this.data.emailLoginFormData.email;
+    const password = this.data.emailLoginFormData.password;
+    authing.login({
+      email: email,
+      password: password
+    }).then(userinfo => {
+      wx.showToast({
+        title: '登录成功！',
+      })
+      this.setData({
+        userinfo: userinfo,
+        userinfoMd: self.geneUserInfoMd(userinfo)
+      })
+    }).catch(err => {
+      this.showDialog("登录失败！", err.message)
+    })
+  },
+
+  showDialog: function(title, msg) {
+    this.setData({
+      showDialog: true,
+      dialogTitle: title,
+      dialogMsg: msg
+    })
+  },
+
+  closeDialog: function() {
+    this.setData({
+      showDialog: false,
+      dialogMsg: "",
+      dialogTitle: ""
+    })
+  },
+
+  onToggleClick: function(e) {
+    const self = this;
+    console.log(e)
+    const id = e.currentTarget.id;
+    const mo = id.replace('toggle-', '')
+    const handlers = {
+      "emailRegister": function() {
+        self.setData({
+          displayEmailRegister: self.data.displayEmailRegister === "none" ? "default" : "none"
+        })
+      },
+      "emailLogin": function() {
+        self.setData({
+          displayEmailLogin: self.data.displayEmailLogin === "none" ? "default" : "none"
+        })
+      },
+      "userinfo": function() {
+        self.setData({
+          displayUserinfo: self.data.displayUserinfo === "none" ? "default" : "none"
+        })
+      }
+    }
+    handlers[mo]()
+  },
+
   test: function() {
 
-    const email = Math.random().toString(36).substring(4) + "@test.com"
-    const password = "123456!";
-    const userPoolId = '5dca605aad9757834f1e6877';
     const phone = "17670416754"
 
     // 初始化

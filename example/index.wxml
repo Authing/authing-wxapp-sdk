@@ -1,3 +1,83 @@
 <view style="padding:20px">
-	<button ontap="test" style="margin-bottom:20px;">测试（请打开控制台查看结果）</button>
+
+  <view class="page__bd">
+
+    <!-- 顶部头像、昵称 -->
+    <view style="display: flex; justify-content: center; flex-direction: column">
+      <view style="display: flex; justify-content: center;">
+        <image src="{{ userinfo.photo || defaultAvatar }}" style="width: 50px; height: 50px; display: block;border-radius:25px;box-shadow: .5px .5px gray"></image>
+      </view>
+      <view style="display: flex; justify-content: center; margin-top: 11px">
+        <text wx:if="{{userinfo}}">{{userinfo.nickname || userinfo.username || userinfo.email}}</text>
+        <text wx:else>暂未登录</text>
+      </view>
+    </view>
+
+    <view class="toggle-container">
+      <!-- Item 1 -->
+
+      <view class="item">
+        <input type="checkbox" />
+        <label for="box-1" bindtap="onToggleClick" id="toggle-userinfo">当前原始用户信息</label>
+        <view style="display: {{displayUserinfo}}">
+          <view style="box-shadow:0px 0px 10px rgba(0, 0, 0, 0.1)">
+            <wemark md="{{userinfoMd}}" link highlight type="wemark"></wemark>
+          </view>
+        </view>
+      </view>
+
+      <view class="item">
+        <input type="checkbox" />
+        <label for="box-1" bindtap="onToggleClick" id="toggle-emailRegister">使用邮箱注册</label>
+        <view style="display: {{displayEmailRegister}}">
+          <view style="box-shadow:0px 0px 10px rgba(0, 0, 0, 0.1)">
+            <mp-form id="email-register" models="{{emailRegisterFormData}}">
+              <mp-cells>
+                <mp-cell title="邮箱" ext-class="">
+                  <input bindinput="formInputChange" id="email" value="{{emailRegisterFormData.email}}" class="weui-input" placeholder="请输入邮箱" />
+                </mp-cell>
+                <mp-cell title="密码" ext-class="">
+                  <input bindinput="formInputChange" id="password" value="{{emailRegisterFormData.password}}" class="weui-input" placeholder="请输入密码" />
+                </mp-cell>
+              </mp-cells>
+
+              <view style="margin-top: 11px">
+                <button class="weui-btn" type="default" bindtap="submitEmailRegisterForm">确定</button>
+              </view>
+            </mp-form>
+          </view>
+        </view>
+      </view>
+
+      <view class="item">
+        <input type="checkbox" />
+        <label for="box-1" bindtap="onToggleClick" id="toggle-emailLogin">使用邮箱登录</label>
+        <view style="display: {{displayEmailLogin}}">
+          <view style="box-shadow:0px 0px 10px rgba(0, 0, 0, 0.1)">
+            <mp-form id="email-register" models="{{emailLoginFormData}}">
+              <mp-cells>
+                <mp-cell title="邮箱" ext-class="">
+                  <input bindinput="formInputChange" id="emailLogin" value="{{emailLoginFormData.email}}" class="weui-input" placeholder="请输入邮箱" />
+                </mp-cell>
+                <mp-cell title="密码" ext-class="">
+                  <input bindinput="formInputChange" id="passwordLogin" value="{{emailLoginFormData.password}}" class="weui-input" placeholder="请输入密码" />
+                </mp-cell>
+              </mp-cells>
+
+              <view style="margin-top: 11px">
+                <button class="weui-btn" type="default" bindtap="submitEmailLoginForm">确定</button>
+              </view>
+            </mp-form>
+          </view>
+        </view>
+      </view>
+
+    </view>
+    <mp-dialog title="{{dialogTitle}}" show="{{showDialog}}" bindbuttontap="closeDialog" buttons="{{oneButton}}">
+      <view>{{dialogMsg}}</view>
+    </mp-dialog>
+
+    <!-- <button ontap="test" style="margin-bottom:20px;">测试（请打开控制台查看结果）</button> -->
+
+  </view>
 </view>
