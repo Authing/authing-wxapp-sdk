@@ -5,11 +5,12 @@ Page({
 
     const email = Math.random().toString(36).substring(4) + "@test.com"
     const password = "123456!";
-    const clientId = '5b1757e682f4ce00014fdd3e';
+    const userPoolId = '5d9f78acb02d3e14484cfc37';
 
     // 初始化
     let auth = new Authing({
-      clientId: clientId,
+      userPoolId: userPoolId,
+      // clientId: userPoolId, // 旧版本依然可以使用 clientId，推荐使用 userPoolId
     });
 
     // 发送短信验证码
@@ -18,6 +19,8 @@ Page({
     }).catch(err => {
       console.log(err)
     })
+
+
 
     // 注册登录逻辑
     auth.register({

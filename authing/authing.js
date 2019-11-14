@@ -27,8 +27,8 @@ var Authing = function(opts) {
 
   if (!opts.pureUsing) {
 
-    if (!opts.clientId) {
-      throw 'clientId is not provided';
+    if (!opts.clientId && !opts.userPoolId) {
+      throw 'clientId/userPoolId is not provided';
     }
   }
 
@@ -38,6 +38,7 @@ var Authing = function(opts) {
   }
 
   this.opts = opts;
+  this.userPoolId = opts.userPoolId || opts.clientId
 
   this.userAuth = {
     authed: false,
@@ -107,7 +108,7 @@ Authing.prototype = {
 
     let options = {
       secret: this.opts.secret,
-      clientId: this.opts.clientId,
+      userPoolId: this.userPoolId,
     }
 
     var self = this;
@@ -115,7 +116,7 @@ Authing.prototype = {
     return this._AuthService.query({
         query: `
         query {
-          getAccessTokenByAppSecret(secret: "${options.secret}", clientId:  "${options.clientId}")
+          getAccessTokenByAppSecret(secret: "${options.secret}", clientId:  "${options.userPoolId}")
         }
       `,
       })
@@ -178,7 +179,7 @@ Authing.prototype = {
       throw 'options is not provided.';
     }
 
-    options['registerInClient'] = this.opts.clientId;
+    options['registerInClient'] = this.userPoolId;
 
     if (options.password) {
       options.password = _encryption(options.password);
@@ -232,7 +233,7 @@ Authing.prototype = {
       throw 'options is not provided';
     }
 
-    options.registerInClient = this.opts.clientId;
+    options.registerInClient = this.userPoolId;
 
     if (options.password) {
       options.password = _encryption(options.password);
@@ -325,7 +326,7 @@ Authing.prototype = {
     if (!options.id) {
       throw 'id in options is not provided';
     }
-    options.registerInClient = this.opts.clientId;
+    options.registerInClient = this.userPoolId;
 
     var client = this._chooseClient();
 
@@ -431,7 +432,7 @@ Authing.prototype = {
       options.oldPassword = _encryption(options.oldPassword);
     }
 
-    options['registerInClient'] = self.opts.clientId;
+    options['registerInClient'] = self.userPoolId;
 
     var
       keyTypeList = {
@@ -547,7 +548,7 @@ Authing.prototype = {
       throw 'email in options is not provided';
     }
 
-    options.client = this.opts.clientId;
+    options.client = this.userPoolId;
     return this.UserClient.mutate({
       mutation: `
         mutation sendResetPasswordEmail(
@@ -583,7 +584,7 @@ Authing.prototype = {
     if (!options.verifyCode) {
       throw 'verifyCode in options is not provided';
     }
-    options.client = this.opts.clientId;
+    options.client = this.userPoolId;
     return this.UserClient.mutate({
       mutation: `
         mutation verifyResetPasswordVerifyCode(
@@ -626,7 +627,7 @@ Authing.prototype = {
     if (!options.verifyCode) {
       throw 'verifyCode in options is not provided';
     }
-    options.client = this.opts.clientId;
+    options.client = this.userPoolId;
     options.password = _encryption(options.password)
     return this.UserClient.mutate({
       mutation: `
@@ -677,7 +678,7 @@ Authing.prototype = {
       throw 'email in options is not provided';
     }
 
-    options.client = this.opts.clientId;
+    options.client = this.userPoolId;
 
     return this._AuthService.mutate({
       mutation: `
@@ -705,7 +706,6 @@ Authing.prototype = {
 
   grantWxapp: function(code, random) {
     var self = this;
-    var clientId = self.opts.clientId || '';
     return new Promise(function(resolve, reject) {
       wx.request({
         url: `https://oauth.authing.cn/oauth/wxapp/grant/?alias=wxapp&code=${code}&random=${random}&enableFetchPhone=true&useSelfWxapp=true`,
@@ -733,11 +733,11 @@ Authing.prototype = {
     });
   },
 
-  getPhone: function(clientID, data) {
+  getPhone: function(userPoolId, data) {
     var self = this;
     return new Promise(function(resolve, reject) {
       wx.request({
-        url: `https://oauth.authing.cn/oauth/wxapp/phone/${clientID}?useSelfWxapp=true`,
+        url: `https://oauth.authing.cn/oauth/wxapp/phone/${self.userPoolId}?useSelfWxapp=true`,
         method: 'post',
         data: data,
         complete: function(res) {
@@ -755,7 +755,7 @@ Authing.prototype = {
     const url = `${configs.services.user.host.replace(
       "/graphql",
       ""
-    )}/send_smscode/${phone}/${this.opts.clientId}`;
+    )}/send_smscode/${phone}/${this.userPoolId}`;
     console.log(url)
     return new Promise(function(resolve, reject) {
       wx.request({
