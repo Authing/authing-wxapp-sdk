@@ -817,11 +817,11 @@ Authing.prototype = {
     options.clientId = this.userPoolId;
 
     if (!options.password) {
-      throw Error("password is not provided.");
+      throw Error("options.password is not provided.");
     }
 
     if (!options.username) {
-      throw Error("username is not provided.");
+      throw Error("options.username is not provided.");
     }
 
     return this.OAuthClient.mutate({
@@ -860,8 +860,159 @@ Authing.prototype = {
       }
       return res.data.LoginByLDAP;
     });
-  }
+  },
 
+  unbindEmail: function(options) {
+    if (!options.user) {
+      throw Error("user is not provided.");
+    }
+
+    if (!options.client) {
+      throw Error("options.client is not provided.");
+    }
+
+    return this.UserClient.query({
+      operationName: "unbindEmail",
+      query: `mutation unbindEmail(
+      $user: String,
+      $client: String,
+    ){
+      unbindEmail(
+        user: $user,
+        client: $client,
+      ) {
+        _id
+        email
+        emailVerified
+        username
+        nickname
+        company
+        photo
+        browser
+        registerInClient
+        registerMethod
+        oauth
+        token
+        tokenExpiredAt
+        loginsCount
+        lastLogin
+        lastIP
+        signedUp
+        blocked
+        isDeleted
+      }
+    }`,
+      options
+    }).then(res => {
+      return res.data.unbindEmail
+    }).catch(err => {
+      throw err
+    })
+  },
+
+  getAuthedAppList: function(options) {
+    if (!options) {
+      throw Error("options is not provided.");
+    }
+
+    if (!options.userId) {
+      throw Error("options.userId is not provided.");
+    }
+
+    const variables = {
+      clientId: this.userPoolId,
+      userId: options.userId,
+      page: options.page,
+      count: options.count
+    };
+
+    return this.OAuthServiceGql.request({
+      operationName: "GetUserAuthorizedApps",
+      query: `
+    query GetUserAuthorizedApps($clientId: String, $userId: String, $page: Int, $count: Int) {
+      GetUserAuthorizedApps(clientId: $clientId, userId: $userId, page: $page, count: $count) {
+          OAuthApps {
+              _id
+              name
+              domain
+              clientId
+              description
+              isDeleted
+              grants
+              redirectUris
+              when
+          }
+          OIDCApps {
+              _id
+              name
+              client_id
+              domain
+              description
+              authorization_code_expire
+              when
+              isDeleted
+              id_token_signed_response_alg
+              response_types
+              grant_types
+              token_endpoint_auth_method
+              redirect_uris
+              image
+              access_token_expire
+              id_token_expire
+              cas_expire
+  
+          }
+          totalCount
+      }
+  }`,
+      variables
+    }).then(res => {
+      return res.data.GetUserAuthorizedApps
+    }).catch(err => {
+      throw err
+    })
+  },
+
+  revokeAuthedApp: function(options) {
+    if (!options) {
+      throw Error("options is not provided.");
+    }
+
+    if (!options.userId) {
+      throw Error("options.userId is not provided.");
+    }
+
+    if (!options.appId) {
+      throw Error("options.appId is not provided.");
+    }
+
+    const variables = {
+      userPoolId: this.userPoolId,
+      userId: options.userId,
+      appId: options.appId
+    };
+
+    return this.UserClient.mutate({
+      operationName: "RevokeUserAuthorizedApp",
+      mutation: `
+    mutation RevokeUserAuthorizedApp($userPoolId: String, $userId: String, $appId: String) {
+      RevokeUserAuthorizedApp(userPoolId: $userPoolId, userId: $userId, appId: $appId) {
+          isRevoked
+          _id
+          scope
+          appId
+          userId
+          type
+          when
+      }
+    }`,
+      variables
+    }).then(res => {
+      return res.data.revokeAuthedApp
+    }).catcah(err => {
+      throw err
+    })
+  }
 }
 
 module.exports = Authing
