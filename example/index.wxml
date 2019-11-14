@@ -89,7 +89,7 @@
               </mp-cells>
 
               <view style="margin-top: 11px">
-                <button class="weui-btn" type="default" bindtap="submitEmailLoginForm">确定</button>
+                <button class="weui-btn" type="default" bindtap="loginByPhoneCode">确定</button>
               </view>
             </mp-form>
           </view>

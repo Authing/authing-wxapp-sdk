@@ -98,6 +98,52 @@ ${JSON.stringify(userinfo, null, 4)}
     }
   },
 
+  showDialog: function (title, msg) {
+    this.setData({
+      showDialog: true,
+      dialogTitle: title,
+      dialogMsg: msg
+    })
+  },
+
+  closeDialog: function () {
+    this.setData({
+      showDialog: false,
+      dialogMsg: "",
+      dialogTitle: ""
+    })
+  },
+
+  onToggleClick: function (e) {
+    const self = this;
+    console.log(e)
+    const id = e.currentTarget.id;
+    const mo = id.replace('toggle-', '')
+    const handlers = {
+      "emailRegister": function () {
+        self.setData({
+          displayEmailRegister: self.data.displayEmailRegister === "none" ? "default" : "none"
+        })
+      },
+      "emailLogin": function () {
+        self.setData({
+          displayEmailLogin: self.data.displayEmailLogin === "none" ? "default" : "none"
+        })
+      },
+      "userinfo": function () {
+        self.setData({
+          displayUserinfo: self.data.displayUserinfo === "none" ? "default" : "none"
+        })
+      },
+      "phoneLogin": function () {
+        self.setData({
+          displayPhoneLogin: self.data.displayPhoneLogin === "none" ? "default" : "none"
+        })
+      }
+    }
+    handlers[mo]()
+  },
+
   submitEmailRegisterForm: function(e) {
     const self = this
     const email = this.data.emailRegisterFormData.email;
@@ -141,52 +187,6 @@ ${JSON.stringify(userinfo, null, 4)}
     })
   },
 
-  showDialog: function(title, msg) {
-    this.setData({
-      showDialog: true,
-      dialogTitle: title,
-      dialogMsg: msg
-    })
-  },
-
-  closeDialog: function() {
-    this.setData({
-      showDialog: false,
-      dialogMsg: "",
-      dialogTitle: ""
-    })
-  },
-
-  onToggleClick: function(e) {
-    const self = this;
-    console.log(e)
-    const id = e.currentTarget.id;
-    const mo = id.replace('toggle-', '')
-    const handlers = {
-      "emailRegister": function() {
-        self.setData({
-          displayEmailRegister: self.data.displayEmailRegister === "none" ? "default" : "none"
-        })
-      },
-      "emailLogin": function() {
-        self.setData({
-          displayEmailLogin: self.data.displayEmailLogin === "none" ? "default" : "none"
-        })
-      },
-      "userinfo": function() {
-        self.setData({
-          displayUserinfo: self.data.displayUserinfo === "none" ? "default" : "none"
-        })
-      },
-      "phoneLogin": function() {
-        self.setData({
-          displayPhoneLogin: self.data.displayPhoneLogin === "none" ? "default" : "none"
-        })
-      }
-    }
-    handlers[mo]()
-  },
-
   sendPhoneCode: function() {
     const self = this;
     const phone = this.data.phoneLoginFormData.phone
@@ -201,6 +201,35 @@ ${JSON.stringify(userinfo, null, 4)}
       })
     }).catch(err => {
       self.showDialog("发送验证码失败", err.message)
+    })
+  },
+
+  loginByPhoneCode: function() {
+    const self = this;
+    const phone = this.data.phoneLoginFormData.phone
+    const phoneCode = this.data.phoneLoginFormData.phoneCode
+    console.log(this.data)
+    if (!/^1[3456789]\d{9}$/.test(phone)) {
+      this.showDialog("手机号登录失败", "请检查手机号格式！")
+      return
+    }
+    if (!phoneCode) {
+      this.showDialog("手机号登录失败", "请填写验证码！")
+      return
+    }
+    authing.loginByPhoneCode({
+      phone: phone,
+      phoneCode: phoneCode
+    }).then(userinfo => {
+      wx.showToast({
+        title: '登录成功！',
+      })
+      this.setData({
+        userinfo: userinfo,
+        userinfoMd: self.geneUserInfoMd(userinfo)
+      })
+    }).catch(err => {
+      self.showDialog("手机号登录失败", err.message)
     })
   },
 
