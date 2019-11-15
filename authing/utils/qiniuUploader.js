@@ -49,7 +49,6 @@
   }
 
   function upload(filePath, success, fail, options, progress, cancelTask, before, complete) {
-    console.log(options)
     if (null == filePath) {
       console.error('qiniu uploader need filePath to upload');
       return;
@@ -57,7 +56,6 @@
     if (options) {
       updateConfigWithOptions(options);
     }
-    console.log(config)
     if (config.qiniuUploadToken) {
       doUpload(filePath, success, fail, options, progress, cancelTask, before, complete);
     } else if (config.qiniuUploadTokenURL) {
