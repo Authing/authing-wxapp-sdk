@@ -1,5 +1,5 @@
 var Authing = require('../authing/authing.js');
-const userPoolId = '5dca605aad9757834f1e6877';
+const userPoolId = '5da7edab50396c1ad962378a';
 const authing = new Authing({
   userPoolId: userPoolId
 })
@@ -273,6 +273,19 @@ ${JSON.stringify(userinfo, null, 4)}
     })
   },
 
+  onGotUserInfo: function(e) {
+    const self = this;
+    authing.loginWithWeapp(e).then(userinfo => {
+      console.log(userinfo)
+      self.setData({
+        userinfo: userinfo,
+        userinfoMd: self.geneUserInfoMd(userinfo)
+      })
+    }).catch(err => {
+      console.log(err)
+    })
+  },
+
   logout: function() {
     if (!this.data.userinfo) {
       this.showDialog("退出登录失败", "请先登录")
@@ -291,68 +304,6 @@ ${JSON.stringify(userinfo, null, 4)}
   },
 
   test: function() {
-
-    const phone = "17670416754"
-
-    // 初始化
-    let auth = new Authing({
-      userPoolId: userPoolId,
-      // clientId: userPoolId, // 旧版本依然可以使用 clientId，推荐使用 userPoolId
-    });
-
-    // 发送短信验证码
-    auth.getVerificationCode(phone).then(result => {
-      console.log(result)
-    }).catch(err => {
-      console.log(err)
-    })
-
-    auth.loginByPhoneCode({
-      phone: phone,
-      phoneCode: "5283"
-    }).then(result => {
-      console.log(result)
-    }).catch(err => {
-      console.log(err)
-    })
-
-    // 注册登录逻辑
-    auth.register({
-      email: email,
-      password: password
-    }).then(function(user) {
-      console.log('注册成功!')
-      console.log(user);
-
-      auth.login({
-        email: email,
-        password: password
-      }).then(function(user) {
-        console.log('登录成功!');
-        console.log(user);
-
-        auth.update({
-            _id: user._id,
-            nickname: "用户名" + Math.random().toString(36).substring(6),
-          })
-          .then(function(user) {
-            console.log('修改资料成功!');
-            console.log(user);
-
-          }).catch(function(error) {
-            console.log('修改资料失败!');
-            console.log(error);
-          });
-
-      }).catch(function(error) {
-        console.log('注册失败!')
-        console.log(error);
-      });
-    }).catch(function(error) {
-      console.log('登录失败!')
-      console.log(error);
-    });
-
 
   }
 });

@@ -14,13 +14,11 @@
           <mp-icon wx:if="{{showNicknameInput}}" type="field" icon="done" color="black" size="{{15}}" style="margin-bottom:2px;margin-left:5px" bindtap="updateNickname"></mp-icon>
           <mp-icon wx:else type="field" icon="pencil" color="black" size="{{15}}" style="margin-bottom:2px;margin-left:5px" bindtap="showNicknameInput"></mp-icon>
         </view>
-        <text wx:else>暂未登录</text>
+        <button open-type="getUserInfo" lang="zh_CN" bindgetuserinfo="onGotUserInfo" wx:else style="margin: 0;background: white;border: none;font-size: 14px;border-style: none;outline: none;">获取微信头像</button>
       </view>
     </view>
 
     <view class="toggle-container">
-      <!-- Item 1 -->
-
       <view class="item">
         <input type="checkbox" />
         <label for="box-1" bindtap="onToggleClick" id="toggle-userinfo">当前原始用户信息</label>

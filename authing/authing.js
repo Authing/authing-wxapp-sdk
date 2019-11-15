@@ -15,7 +15,9 @@ var errorHandler = function(resolve, reject, res) {
   var retData = res.data ? res.data : {
     code: 200
   };
-  console.log(res.statusCode == 200 && retData.code == 200);
+
+  // 请求成功的标志：
+  // 通信字段 statusCode = 200 且返回数据的 code = 200
   if (res.statusCode == 200 && retData.code == 200) {
     resolve(res.data.data || res.data);
   } else {
@@ -53,6 +55,9 @@ var Authing = function(opts) {
     self.ownerAuth.authed = true;
     self.ownerAuth.authSuccess = false;
   }
+
+  this.userHost = configs.services.user.host.replace("/graphql", "")
+  this.oauthHost = configs.services.oauth.host.replace("/graphql", "")
 
   return this;
 
@@ -697,7 +702,7 @@ Authing.prototype = {
     var self = this;
     return new Promise(function(resolve, reject) {
       wx.request({
-        url: `https://oauth.authing.cn/oauth/wxapp/grant/?alias=wxapp&code=${code}&random=${random}&enableFetchPhone=true&useSelfWxapp=true`,
+        url: `${this.oauthHost}/oauth/wxapp/grant/?alias=wxapp&code=${code}&random=${random}&enableFetchPhone=true&useSelfWxapp=true`,
         //&useSelfWxapp=false
         method: 'get',
         // header: obj.header || mutateObj.header,
@@ -712,7 +717,7 @@ Authing.prototype = {
     var self = this;
     return new Promise(function(resolve, reject) {
       wx.request({
-        url: `https://oauth.authing.cn/oauth/wxapp/redirect?random=${random}`,
+        url: `${this.oauthHost}/oauth/wxapp/redirect?random=${random}`,
         method: 'post',
         data: data,
         complete: function(res) {
@@ -726,7 +731,7 @@ Authing.prototype = {
     var self = this;
     return new Promise(function(resolve, reject) {
       wx.request({
-        url: `https://oauth.authing.cn/oauth/wxapp/phone/${self.userPoolId}?useSelfWxapp=true`,
+        url: `${this.oauthHost}/oauth/wxapp/phone/${self.userPoolId}?useSelfWxapp=true`,
         method: 'post',
         data: data,
         complete: function(res) {
@@ -741,10 +746,7 @@ Authing.prototype = {
       throw "phone is not provided";
     }
 
-    const url = `${configs.services.user.host.replace(
-      "/graphql",
-      ""
-    )}/send_smscode/${phone}/${this.userPoolId}`;
+    const url = `${this.userHost}/send_smscode/${phone}/${this.userPoolId}`;
     console.log(url)
     return new Promise(function(resolve, reject) {
       wx.request({
@@ -800,8 +802,6 @@ Authing.prototype = {
       if (res && res.data) {
         const token = res.data.login.token
         self.initUserClient(token)
-        if (configs.inBrowser)
-          wx.setStorageSync('_authing_token', token);
       }
       return res.data.login;
     }).catch(err => {
@@ -851,12 +851,9 @@ Authing.prototype = {
     }`,
       variables: options
     }).then(res => {
-      // 登录成功记录 token
       if (res && res.data) {
         const token = res.data.LoginByLDAP.token
         self.initUserClient(token)
-        if (configs.inBrowser)
-          localStorage.setItem('_authing_token', oken)
       }
       return res.data.LoginByLDAP;
     });
@@ -1010,6 +1007,62 @@ Authing.prototype = {
       return res.data.revokeAuthedApp
     }).catcah(err => {
       throw err
+    })
+  },
+
+  loginWithWeapp: function(wxGetUserInfoEvent) {
+    const self = this
+
+    return new Promise(function(resolve, reject) {
+
+      const detail = wxGetUserInfoEvent.detail;
+      if (detail.errMsg !== "getUserInfo:ok") {
+        reject(detail.errMsg)
+        return
+      }
+
+      wx.login({
+        success: function(res) {
+          const code = res.code;
+
+          // https://blog.csdn.net/jackie_bobo/article/details/87880648
+          // important! 调用 wx.getUserInfo 一定要在 wx.login 之后，因为 wx.login 会刷新登录态
+          // 导致 getUserInfo 获取的用户信息过期！
+          wx.getUserInfo({
+            withCredentials: true,
+            lang: "zh_CN",
+
+            success: function(res) {
+              const {
+                iv,
+                encryptedData
+              } = res;
+              wx.request({
+                url: `${self.oauthHost}/oauth/wechatapp/auth/${self.userPoolId}`,
+                method: "POST",
+                data: {
+                  iv: iv,
+                  encryptedData: encryptedData,
+                  code: code
+                },
+                complete: function(res) {
+                  errorHandler(resolve, reject, res);
+                },
+                success: function(res) {
+                  console.log(res)
+                  if (res.data.code === 200) {
+                    self.initUserClient(res.data.data.token)
+                  }
+                }
+              })
+            },
+
+            fail: function(err) {
+              reject(err)
+            }
+          })
+        }
+      })
     })
   }
 }
