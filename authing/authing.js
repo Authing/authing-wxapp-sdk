@@ -1053,6 +1053,8 @@ Authing.prototype = {
             return
           }
           const filePath = res.tempFilePaths[0];
+          console.log(filePath)
+          const qiniuKey = filePath.split("//")[1].replace("tmp/","avatar/wechatapp/")
           self.UserClient.query({
               query: `query qiNiuUploadToken {
         qiNiuUploadToken
@@ -1084,7 +1086,8 @@ Authing.prototype = {
                 // optiosn
                 {
                   region: "ECN",
-                  uptoken: qiniuToken
+                  uptoken: qiniuToken,
+                  key: qiniuKey
                 }
               )
             })
