@@ -273,6 +273,24 @@ ${JSON.stringify(userinfo, null, 4)}
     })
   },
 
+  changeAvatar: function() {
+    if (!this.data.userinfo) {
+      return
+    }
+
+    const self = this;
+    const userId = this.data.userinfo._id
+    authing.changeAvatar(userId).then(function(userinfo) {
+      console.log(userinfo)
+      self.setData({
+        userinfo: userinfo,
+        userinfoMd: self.geneUserInfoMd(userinfo)
+      })
+    }).catch(function(err) {
+      console.log(err)
+    })
+  },
+
   onGotUserInfo: function(e) {
     const self = this;
     authing.loginWithWeapp(e).then(userinfo => {

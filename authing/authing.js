@@ -2,6 +2,7 @@ var gql = require('./graphql/wxgql.js');
 var GraphQL = gql.GraphQL;
 var configs = require('./configs.js');
 var RSA = require('./utils/wxapp_rsa.js');
+const qiniuUploader = require("./utils/qiniuUploader");
 
 var _encryption = function(paw) {
   var encrypt_rsa = new RSA.RSAKey();
@@ -488,31 +489,6 @@ Authing.prototype = {
         _args: _args,
         _argsString: _argsString,
         _argsFiller: _argsFiller
-      }
-    }
-
-    if (options.photo) {
-      var photo = options.photo;
-      if (typeof photo !== 'string') {
-        return this._uploadAvatar(options).then(function(options) {
-          var _arg = generateArgs(options);
-          return client.mutate({
-            mutation: `
-              mutation UpdateUser(${_arg._argsString}){
-                updateUser(options: {
-                  ${_arg._argsFiller.join(', ')}
-                }) {
-                ${returnFields}
-                }
-              }
-            `,
-            variables: options
-          })
-        }).then(function(res) {
-          return res.data.updateUser;
-        }).catch(function(error) {
-          throw error;
-        });
       }
     }
     var _arg = generateArgs(options);
@@ -1049,7 +1025,6 @@ Authing.prototype = {
                   errorHandler(resolve, reject, res);
                 },
                 success: function(res) {
-                  console.log(res)
                   if (res.data.code === 200) {
                     self.initUserClient(res.data.data.token)
                   }
@@ -1062,6 +1037,62 @@ Authing.prototype = {
             }
           })
         }
+      })
+    })
+  },
+
+  changeAvatar(userId) {
+    // TODO: 这个 userId 可不可以省略
+    const self = this;
+    return new Promise(function(resolve, reject) {
+      wx.chooseImage({
+        count: 1,
+        success: function(res) {
+          if (res.errMsg !== "chooseImage:ok") {
+            reject(res.errMsg)
+            return
+          }
+          const filePath = res.tempFilePaths[0];
+          self.UserClient.query({
+              query: `query qiNiuUploadToken {
+        qiNiuUploadToken
+      }`
+            })
+            .then(function(res) {
+              const qiniuToken = res.data.qiNiuUploadToken
+              qiniuUploader.upload(
+                filePath,
+                // 上传成功回调函数
+                function(res) {
+                  if (res.key) {
+                    const iamgeUrl = "https://usercontents.authing.cn/" + res.key
+                    // 修改头像
+                    self.update({
+                      _id: userId,
+                      photo: iamgeUrl
+                    }).then(function(userinfo) {
+                      resolve(userinfo)
+                    }).catch(function(err) {
+                      reject(err)
+                    })
+                  }
+                },
+                //   上传失败回调函数
+                function(err) {
+                  reject(err)
+                },
+                // optiosn
+                {
+                  region: "ECN",
+                  uptoken: qiniuToken
+                }
+              )
+            })
+            // 获取 uptoken 失败
+            .catch(function(err) {
+              reject(err)
+            })
+        },
       })
     })
   }
