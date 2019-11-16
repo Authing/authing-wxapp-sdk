@@ -944,16 +944,15 @@ Authing.prototype = {
     })
   },
 
-  loginWithWeapp: function(code, wxGetUserInfoEvent) {
+  loginWithWeapp: function(code, wxGetUserInfoDetail) {
     const self = this
 
     return new Promise(function(resolve, reject) {
-      const detail = wxGetUserInfoEvent.detail;
       const {
         errMsg,
         encryptedData,
         iv
-      } = detail
+      } = wxGetUserInfoDetail
       if (errMsg !== "getUserInfo:ok") {
         reject(errMsg)
         return
@@ -979,7 +978,7 @@ Authing.prototype = {
     })
   },
 
-  bindPhone: function(code, wxGetPhoneEvent) {
+  bindPhone: function(code, wxGetPhoneDetail) {
     const self = this
     return new Promise(function(resolve, reject) {
 
@@ -989,12 +988,11 @@ Authing.prototype = {
       }
 
       // 判断用户是否同意授权
-      const detail = wxGetPhoneEvent.detail;
       const {
         errMsg,
         encryptedData,
         iv
-      } = detail
+      } = wxGetPhoneDetail
       if (errMsg !== "getPhoneNumber:ok") {
         reject(errMsg)
         return

@@ -307,11 +307,12 @@ ${JSON.stringify(userinfo, null, 4)}
 
   onGotUserInfo: function(e) {
     const self = this;
-    const code = wx.getStorageSync("code")
+
     // 微信 wx.login 返回的 code, 为了提高灵活性，开发者需要自己维护。
     // 调用 authing.loginWithWeapp()、authing.bindPhone() 的时候请确保 code 是可用的。
+    const code = wx.getStorageSync("code")
 
-    authing.loginWithWeapp(code, e).then(userinfo => {
+    authing.loginWithWeapp(code, e.detail).then(userinfo => {
       console.log(userinfo)
       self.setData({
         userinfo: userinfo,
@@ -322,7 +323,7 @@ ${JSON.stringify(userinfo, null, 4)}
     })
   },
 
-  getPhoneNumber: function(e) {
+  bindPhone: function(e) {
     const self = this
     console.log(e)
     // 请确保这个 code 是最新可用的
