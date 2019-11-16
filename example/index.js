@@ -1,4 +1,6 @@
 var Authing = require('../authing/authing.js');
+
+// Authing 用户池 ID
 const userPoolId = '5da7edab50396c1ad962378a';
 const authing = new Authing({
   userPoolId: userPoolId
@@ -28,9 +30,6 @@ Page({
   },
 
   data: {
-
-    // Authing 用户池 ID
-    userClientId: "",
 
     // bind form data
     emailRegisterFormData: {
@@ -335,7 +334,7 @@ ${JSON.stringify(userinfo, null, 4)}
         userinfoMd: self.geneUserInfoMd(userinfo)
       })
     }).catch(function(err) {
-      self.showDialog("操作失败", err)
+      self.showDialog("操作失败", err.message)
     })
   },
 
@@ -355,8 +354,4 @@ ${JSON.stringify(userinfo, null, 4)}
       })
     })
   },
-
-  test: function() {
-
-  }
 });
