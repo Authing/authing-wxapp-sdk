@@ -675,49 +675,6 @@ Authing.prototype = {
     });
   },
 
-  grantWxapp: function(code, random) {
-    var self = this;
-    return new Promise(function(resolve, reject) {
-      wx.request({
-        url: `${this.oauthHost}/oauth/wxapp/grant/?alias=wxapp&code=${code}&random=${random}&enableFetchPhone=true&useSelfWxapp=true`,
-        //&useSelfWxapp=false
-        method: 'get',
-        // header: obj.header || mutateObj.header,
-        complete: function(res) {
-          errorHandler(resolve, reject, res);
-        }
-      });
-    });
-  },
-
-  authWxapp: function(random, data) {
-    var self = this;
-    return new Promise(function(resolve, reject) {
-      wx.request({
-        url: `${this.oauthHost}/oauth/wxapp/redirect?random=${random}`,
-        method: 'post',
-        data: data,
-        complete: function(res) {
-          errorHandler(resolve, reject, res);
-        }
-      });
-    });
-  },
-
-  getPhone: function(userPoolId, data) {
-    var self = this;
-    return new Promise(function(resolve, reject) {
-      wx.request({
-        url: `${this.oauthHost}/oauth/wxapp/phone/${self.userPoolId}?useSelfWxapp=true`,
-        method: 'post',
-        data: data,
-        complete: function(res) {
-          errorHandler(resolve, reject, res);
-        }
-      });
-    });
-  },
-
   getVerificationCode: function(phone) {
     if (!phone) {
       throw "phone is not provided";
@@ -1027,7 +984,7 @@ Authing.prototype = {
     return new Promise(function(resolve, reject) {
 
       // 先判断当前是否处于 authing 的登录状态
-      if(!self.userAuth.authed){
+      if (!self.userAuth.authed) {
         reject("绑定手机号之前请先登录！")
       }
 
@@ -1050,6 +1007,9 @@ Authing.prototype = {
           iv,
           encryptedData,
           code
+        },
+        header: {
+          authorization: self.userAuth.token ? self.userAuth.token : ""
         },
         complete: function(res) {
           errorHandler(resolve, reject, res);
