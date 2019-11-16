@@ -12,6 +12,21 @@ const dontLoginMd = `
 
 Page({
 
+  onLoad: function() {
+    const self = this
+    wx.checkSession({
+      // 若丢失了登录态，通过 wx.login 重新获取
+      fail() {
+        wx.login({
+          succes(res) {
+            const code = res.code;
+            wx.setStorageSync("code", code)
+          }
+        })
+      }
+    })
+  },
+
   data: {
 
     // Authing 用户池 ID
@@ -293,14 +308,34 @@ ${JSON.stringify(userinfo, null, 4)}
 
   onGotUserInfo: function(e) {
     const self = this;
-    authing.loginWithWeapp(e).then(userinfo => {
+    const code = wx.getStorageSync("code")
+    // 微信 wx.login 返回的 code, 为了提高灵活性，开发者需要自己维护。
+    // 调用 authing.loginWithWeapp()、authing.bindPhone() 的时候请确保 code 是可用的。
+
+    authing.loginWithWeapp(code, e).then(userinfo => {
       console.log(userinfo)
       self.setData({
         userinfo: userinfo,
         userinfoMd: self.geneUserInfoMd(userinfo)
       })
     }).catch(err => {
-      console.log(err)
+      self.showDialog("操作失败", err)
+    })
+  },
+
+  getPhoneNumber: function(e) {
+    const self = this
+    console.log(e)
+    // 请确保这个 code 是最新可用的
+    const code = wx.getStorageSync("code")
+    authing.bindPhone(code, e).then(function(userinfo) {
+      console.log(userinfo)
+      self.setData({
+        userinfo: userinfo,
+        userinfoMd: self.geneUserInfoMd(userinfo)
+      })
+    }).catch(function(err) {
+      self.showDialog("操作失败", err)
     })
   },
 

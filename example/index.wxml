@@ -16,6 +16,11 @@
         </view>
         <button open-type="getUserInfo" lang="zh_CN" bindgetuserinfo="onGotUserInfo" wx:else style="margin: 0;background: white;border: none;font-size: 14px;border-style: none;outline: none;">获取微信头像</button>
       </view>
+
+      <view style="display: flex; justify-content: center; margin-top: 11px">
+        <button open-type="getPhoneNumber" bindgetphonenumber="getPhoneNumber" style="margin: 0;background: white;border: none;font-size: 14px;border-style: none;outline: none; width:140px">绑定手机号</button>
+      </view>
+
     </view>
 
     <view class="toggle-container">

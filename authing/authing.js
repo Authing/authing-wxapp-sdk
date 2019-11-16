@@ -59,6 +59,7 @@ var Authing = function(opts) {
 
   this.userHost = configs.services.user.host.replace("/graphql", "")
   this.oauthHost = configs.services.oauth.host.replace("/graphql", "")
+  this.imageCDN = "https://usercontents.authing.cn/"
 
   return this;
 
@@ -986,57 +987,73 @@ Authing.prototype = {
     })
   },
 
-  loginWithWeapp: function(wxGetUserInfoEvent) {
+  loginWithWeapp: function(code, wxGetUserInfoEvent) {
     const self = this
 
     return new Promise(function(resolve, reject) {
-
       const detail = wxGetUserInfoEvent.detail;
-      if (detail.errMsg !== "getUserInfo:ok") {
-        reject(detail.errMsg)
+      const {
+        errMsg,
+        encryptedData,
+        iv
+      } = detail
+      if (errMsg !== "getUserInfo:ok") {
+        reject(errMsg)
         return
       }
 
-      wx.login({
+      wx.request({
+        url: `${self.oauthHost}/oauth/wechatapp/auth/${self.userPoolId}`,
+        method: "POST",
+        data: {
+          iv: iv,
+          encryptedData: encryptedData,
+          code: code
+        },
+        complete: function(res) {
+          errorHandler(resolve, reject, res);
+        },
         success: function(res) {
-          const code = res.code;
-
-          // https://blog.csdn.net/jackie_bobo/article/details/87880648
-          // important! 调用 wx.getUserInfo 一定要在 wx.login 之后，因为 wx.login 会刷新登录态
-          // 导致 getUserInfo 获取的用户信息过期！
-          wx.getUserInfo({
-            withCredentials: true,
-            lang: "zh_CN",
-
-            success: function(res) {
-              const {
-                iv,
-                encryptedData
-              } = res;
-              wx.request({
-                url: `${self.oauthHost}/oauth/wechatapp/auth/${self.userPoolId}`,
-                method: "POST",
-                data: {
-                  iv: iv,
-                  encryptedData: encryptedData,
-                  code: code
-                },
-                complete: function(res) {
-                  errorHandler(resolve, reject, res);
-                },
-                success: function(res) {
-                  if (res.data.code === 200) {
-                    self.initUserClient(res.data.data.token)
-                  }
-                }
-              })
-            },
-
-            fail: function(err) {
-              reject(err)
-            }
-          })
+          if (res.data.code === 200) {
+            self.initUserClient(res.data.data.token)
+          }
         }
+      })
+    })
+  },
+
+  bindPhone: function(code, wxGetPhoneEvent) {
+    const self = this
+    return new Promise(function(resolve, reject) {
+
+      // 先判断当前是否处于 authing 的登录状态
+      if(!self.userAuth.authed){
+        reject("绑定手机号之前请先登录！")
+      }
+
+      // 判断用户是否同意授权
+      const detail = wxGetPhoneEvent.detail;
+      const {
+        errMsg,
+        encryptedData,
+        iv
+      } = detail
+      if (errMsg !== "getPhoneNumber:ok") {
+        reject(errMsg)
+        return
+      }
+
+      wx.request({
+        url: `${self.oauthHost}/oauth/wechatapp/phone/${self.userPoolId}`,
+        method: "POST",
+        data: {
+          iv,
+          encryptedData,
+          code
+        },
+        complete: function(res) {
+          errorHandler(resolve, reject, res);
+        },
       })
     })
   },
@@ -1053,8 +1070,7 @@ Authing.prototype = {
             return
           }
           const filePath = res.tempFilePaths[0];
-          console.log(filePath)
-          const qiniuKey = filePath.split("//")[1].replace("tmp/","avatar/wechatapp/")
+          const qiniuKey = filePath.split("//")[1].replace("tmp/", "avatar/wechatapp/")
           self.UserClient.query({
               query: `query qiNiuUploadToken {
         qiNiuUploadToken
@@ -1067,7 +1083,7 @@ Authing.prototype = {
                 // 上传成功回调函数
                 function(res) {
                   if (res.key) {
-                    const iamgeUrl = "https://usercontents.authing.cn/" + res.key
+                    const iamgeUrl = self.imageCDN + res.key
                     // 修改头像
                     self.update({
                       _id: userId,
