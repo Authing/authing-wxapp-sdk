@@ -1,3 +1,120 @@
 <view style="padding:20px">
-	<button ontap="test" style="margin-bottom:20px;">测试（请打开控制台查看结果）</button>
+
+  <view class="page__bd">
+
+    <!-- 顶部头像、昵称 -->
+    <view style="display: flex; justify-content: center; flex-direction: column">
+      <view style="display: flex; justify-content: center;">
+        <image src="{{ userinfo.photo || defaultAvatar }}" style="width: 50px; height: 50px; display: block;border-radius:25px;box-shadow: .5px .5px gray" bindtap="changeAvatar"></image>
+      </view>
+      <view style="display: flex; justify-content: center; margin-top: 11px">
+        <view wx:if="{{userinfo}}" style="display: flex; align-items: center">
+          <input wx:if="{{showNicknameInput}}" value="{{userinfo.nickname || userinfo.username || userinfo.email}}" placeholder="输入修改的昵称" style="width:150px" bindinput="formInputChange" id="nickname"></input>
+          <text wx:else>{{userinfo.nickname || userinfo.username || userinfo.email}}</text>
+          <mp-icon wx:if="{{showNicknameInput}}" type="field" icon="done" color="black" size="{{15}}" style="margin-bottom:2px;margin-left:5px" bindtap="updateNickname"></mp-icon>
+          <mp-icon wx:else type="field" icon="pencil" color="black" size="{{15}}" style="margin-bottom:2px;margin-left:5px" bindtap="showNicknameInput"></mp-icon>
+        </view>
+        <button open-type="getUserInfo" lang="zh_CN" bindgetuserinfo="onGotUserInfo" wx:else style="margin: 0;background: white;border: none;font-size: 14px;border-style: none;outline: none;">获取微信头像</button>
+      </view>
+
+      <view style="display: flex; justify-content: center; margin-top: 11px">
+        <button open-type="getPhoneNumber" bindgetphonenumber="bindPhone" style="margin: 0;background: white;border: none;font-size: 14px;border-style: none;outline: none; width:140px">绑定手机号</button>
+      </view>
+
+    </view>
+
+    <view class="toggle-container">
+      <view class="item">
+        <input type="checkbox" />
+        <label for="box-1" bindtap="onToggleClick" id="toggle-userinfo">当前原始用户信息</label>
+        <view style="display: {{displayUserinfo}}">
+          <view style="box-shadow:0px 0px 10px rgba(0, 0, 0, 0.1)">
+            <wemark md="{{userinfoMd}}" link highlight type="wemark"></wemark>
+          </view>
+        </view>
+      </view>
+
+      <view class="item">
+        <input type="checkbox" />
+        <label for="box-1" bindtap="onToggleClick" id="toggle-emailRegister">使用邮箱注册</label>
+        <view style="display: {{displayEmailRegister}}">
+          <view style="box-shadow:0px 0px 10px rgba(0, 0, 0, 0.1)">
+            <mp-form id="email-register" models="{{emailRegisterFormData}}">
+              <mp-cells>
+                <mp-cell title="邮箱" ext-class="">
+                  <input bindinput="formInputChange" id="email" value="{{emailRegisterFormData.email}}" class="weui-input" placeholder="请输入邮箱" />
+                </mp-cell>
+                <mp-cell title="密码" ext-class="">
+                  <input bindinput="formInputChange" id="password" value="{{emailRegisterFormData.password}}" class="weui-input" placeholder="请输入密码" />
+                </mp-cell>
+              </mp-cells>
+
+              <view style="margin-top: 11px">
+                <button class="weui-btn" type="default" bindtap="submitEmailRegisterForm">确定</button>
+              </view>
+            </mp-form>
+          </view>
+        </view>
+      </view>
+
+      <view class="item">
+        <input type="checkbox" />
+        <label for="box-1" bindtap="onToggleClick" id="toggle-emailLogin">使用邮箱登录</label>
+        <view style="display: {{displayEmailLogin}}">
+          <view style="box-shadow:0px 0px 10px rgba(0, 0, 0, 0.1)">
+            <mp-form id="email-register" models="{{emailLoginFormData}}">
+              <mp-cells>
+                <mp-cell title="邮箱" ext-class="">
+                  <input bindinput="formInputChange" id="emailLogin" value="{{emailLoginFormData.email}}" class="weui-input" placeholder="请输入邮箱" />
+                </mp-cell>
+                <mp-cell title="密码" ext-class="">
+                  <input bindinput="formInputChange" id="passwordLogin" value="{{emailLoginFormData.password}}" class="weui-input" placeholder="请输入密码" />
+                </mp-cell>
+              </mp-cells>
+
+              <view style="margin-top: 11px">
+                <button class="weui-btn" type="default" bindtap="submitEmailLoginForm">确定</button>
+              </view>
+            </mp-form>
+          </view>
+        </view>
+      </view>
+
+      <view class="item">
+        <input type="checkbox" />
+        <label for="box-1" bindtap="onToggleClick" id="toggle-phoneLogin">使用手机号登录</label>
+        <view style="display: {{displayPhoneLogin}}">
+          <view style="box-shadow:0px 0px 10px rgba(0, 0, 0, 0.1)">
+            <mp-form id="email-register" models="{{phoneLoginFormData}}">
+              <mp-cells>
+                <mp-cell title="手机号" ext-class="">
+                  <input bindinput="formInputChange" id="phone" value="{{phoneLoginFormData.phone}}" class="weui-input" placeholder="请输入手机号" />
+                </mp-cell>
+                <mp-cell title="验证码" ext-class="">
+                  <input bindinput="formInputChange" id="phoneCode" value="{{phoneLoginFormData.phoneCode}}" class="weui-input" placeholder="请输入验证码" />
+                  <view slot="footer" class="weui-vcode-btn" bindtap="sendPhoneCode">获取验证码</view>
+                </mp-cell>
+              </mp-cells>
+
+              <view style="margin-top: 11px">
+                <button class="weui-btn" type="default" bindtap="loginByPhoneCode">确定</button>
+              </view>
+            </mp-form>
+          </view>
+        </view>
+      </view>
+
+      <view class="item">
+        <input type="checkbox" />
+        <label for="box-1" bindtap="logout">点击退出登录</label>
+      </view>
+
+    </view>
+    <mp-dialog title="{{dialogTitle}}" show="{{showDialog}}" bindbuttontap="closeDialog" buttons="{{oneButton}}">
+      <view>{{dialogMsg}}</view>
+    </mp-dialog>
+
+    <!-- <button ontap="test" style="margin-bottom:20px;">测试（请打开控制台查看结果）</button> -->
+
+  </view>
 </view>

@@ -1,0 +1,98 @@
+/**
+ *
+ * Pure CSS Toggle List
+ * Created by Alex Erlandsson
+ * https://alexerlandsson.com
+ *
+ **/
+/* SCSS Variables & Mixins */
+/* Toggle List */
+.toggle-container {
+  margin: 0 auto;
+  text-align: center;
+  margin-top: 45px;
+  padding-bottom: 15px;
+}
+.toggle-container .header {
+  width: 100%;
+  padding: 30px 15px;
+  color: #000;
+  margin-bottom: 7.5px;
+}
+.toggle-container .header p {
+  color: #808080;
+  margin-bottom: 0;
+}
+.toggle-container .item {
+  width: 100%;
+  margin-bottom: 7.5px;
+}
+.toggle-container .item input[type=checkbox] {
+  display: none;
+}
+.toggle-container .item input[type=checkbox]:checked + label {
+  background-color: #00c255;
+  color: #FFF;
+}
+.toggle-container .item input[type=checkbox]:checked + label:after {
+  content: "-";
+  color: #FFF;
+}
+.toggle-container .item input[type=checkbox]:checked + label + view {
+  display: block;
+}
+.toggle-container .item label {
+  display: block;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+  position: relative;
+  padding: 15px;
+  background-color: #FFF;
+  color: #353535;
+  cursor: pointer;
+  webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+.toggle-container .item label:after {
+  content: "+";
+  font-weight: bold;
+  position: absolute;
+  right: 15px;
+  color: #353535;
+}
+.toggle-container .item label:hover {
+  background-color: #00c255;
+  color: #FFF;
+  -webkit-transition: background-color 100ms linear;
+  -moz-transition: background-color 100ms linear;
+  -o-transition: background-color 100ms linear;
+  transition: background-color 100ms linear;
+}
+.toggle-container .item label:hover:after {
+  color: #FFF;
+}
+.toggle-container .item view {
+  /* display: none; */
+  border-top: none;
+  background-color: #FFF;
+  text-align: left;
+}
+
+/* Base */
+view {
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+}
+
+body {
+  font-family: "Open Sans", sans-serif;
+  font-weight: 300;
+  background-color: #f0f0f0;
+  margin: 0;
+}
