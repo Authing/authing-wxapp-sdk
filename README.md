@@ -124,7 +124,7 @@ const code = wx.getStorageSync("code")
 
 ### 使用微信授权登录
 
-Authing 对微信授权协议进行了封装，使得开发者可以用几行代码实现使用微信身份登录。开发者只需要引导用户点击微信开放 button 组件，获取到点击事件 `e` 之后，将 `e.detail` 传给 `authing.loginWithWeapp` 方法即可。
+Authing 对微信授权协议进行了封装，使得开发者可以用几行代码实现使用微信身份登录。开发者只需要引导用户点击微信开放 button 组件，获取到点击事件 `e` 之后，将 `e.detail` 传给 `authing.loginWithWxapp` 方法即可。
 
 ```html
 <!-- example.wxml -->
@@ -137,10 +137,10 @@ onGotUserInfo: function(e) {
 	const self = this;
 
 	// 微信 wx.login 返回的 code, 为了提高灵活性，开发者需要自己维护。
-	// 调用 authing.loginWithWeapp()、authing.bindPhone() 的时候请确保 code 是可用的。
+	// 调用 authing.loginWithWxapp()、authing.bindPhone() 的时候请确保 code 是可用的。
 	const code = wx.getStorageSync("code")
 
-	authing.loginWithWeapp(code, e.detail).then(userinfo => {
+	authing.loginWithWxapp(code, e.detail).then(userinfo => {
 		console.log(userinfo)
 		self.setData({
 			userinfo: userinfo,
@@ -162,7 +162,7 @@ wx.getSetting({
 			// 已经授权，可以直接调用 getUserInfo 获取头像昵称
 			wx.getUserInfo({
 				success: function(res) {
-					authing.loginWithWeapp(code, res).then(userinfo => {
+					authing.loginWithWxapp(code, res).then(userinfo => {
 						console.log(userinfo)
 						self.setData({
 							userinfo: userinfo,

@@ -940,7 +940,7 @@ Authing.prototype = {
     })
   },
 
-  loginWithWeapp: function(code, wxGetUserInfoDetail) {
+  loginWithWxapp: function(code, wxGetUserInfoDetail) {
     const self = this
 
     return new Promise(function(resolve, reject) {
