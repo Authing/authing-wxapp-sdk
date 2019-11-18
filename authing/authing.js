@@ -52,15 +52,11 @@ var Authing = function(opts) {
   this.initUserClient();
   this.initOAuthClient();
 
-  if (opts.pureUsing) {
-    self.ownerAuth.authed = true;
-    self.ownerAuth.authSuccess = false;
-  }
-
   this.userHost = configs.services.user.host.replace("/graphql", "")
   this.oauthHost = configs.services.oauth.host.replace("/graphql", "")
   this.imageCDN = "https://usercontents.authing.cn/"
 
+  this._loginFromLocalStorage()
   return this;
 
 }

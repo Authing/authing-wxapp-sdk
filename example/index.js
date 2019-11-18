@@ -328,7 +328,7 @@ ${JSON.stringify(userinfo, null, 4)}
     console.log(e)
     // 请确保这个 code 是最新可用的
     const code = wx.getStorageSync("code")
-    authing.bindPhone(code, e).then(function(userinfo) {
+    authing.bindPhone(code, e.detail).then(function(userinfo) {
       console.log(userinfo)
       self.setData({
         userinfo: userinfo,
