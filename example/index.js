@@ -1,7 +1,7 @@
 var Authing = require('../authing/authing.js');
 
 // Authing 用户池 ID
-const userPoolId = '5da7edab50396c1ad962378a';
+const userPoolId = '5a9fa26cf8635a000185528c';
 const authing = new Authing({
   userPoolId: userPoolId
 })
