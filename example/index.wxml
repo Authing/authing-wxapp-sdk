@@ -114,7 +114,5 @@
       <view>{{dialogMsg}}</view>
     </mp-dialog>
 
-    <!-- <button ontap="test" style="margin-bottom:20px;">测试（请打开控制台查看结果）</button> -->
-
   </view>
 </view>

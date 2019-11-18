@@ -1,7 +1,8 @@
 # authing-wxapp-sdk（Authing SDK for 小程序）
 
 > 更新时间： 2019-11-16
-> 本次更新： 支持在微信小程序中，使用微信授权注册、登录 Authing，获取并绑定用户手机号
+
+> 本次更新： 使用微信小程序登录；通过微信接口获取并绑定手机号。
 
 ![](https://usercontents.authing.cn/doc/assets/wechatapp_demo.png)
 
@@ -49,13 +50,23 @@ var Authing = require('path/to/authing/authing.js')
 
 ### 初始化
 
-> [如何获取用户池 ID（userPoolId）？](https://learn.authing.cn/authing/quickstart/basic#yong-hu-chi)
+如果你对 Authing 用户池这个概念不是很了解，可以查阅 Authing 官方文档：
+
+- [基础概念](https://learn.authing.cn/authing/quickstart/basic)
+- [如何获取用户池 ID?](https://learn.authing.cn/authing/others/faq)
+
 
 ``` javascript
 
 const authing = new Authing({
 	userPoolId: 'YOUR_USERPOOLID'
 });
+
+```
+
+之后就可以调用其他的方法了，比如：
+
+```
 authing.login({
 	email: "USER_EMAIL",
 	password: "USER_PASSWORD"
@@ -68,15 +79,12 @@ authing.login({
 })
 ```
 
-### 调用微信相关 SDK 方法需要传入 code
+### 获取小程序的 Code
 
-`wx.login` 方法用于获取 `code`，此方法不需要经过用于授权。
+Code 用来在小程序中执行微信登录，获取用户信息。`wx.login` 方法用于获取 `code`，此方法不需要经过用于授权。
 
-出于安全性和非侵入性的考虑，Authing 不会主动调用任何牵涉到用户信息的 API，所以**需要开发者自己确保传给 Authing 的 `code` 永远是最新的**。
-
-在这里推荐一种处理 wx.login 的最佳实践：
-
-app 初次启动的时候判断登录态，如未登录，调用 `wx.login()` 获取 `code` 并存入 `stroage`。
+下面推荐一种如何处理 Code 的最佳实践：
+- app 初次启动的时候判断登录态，如未登录，调用 `wx.login()` 获取 `code` 并存入 `stroage`。
 ```javascript
 // app.js
 onLaunch: function() {
@@ -99,7 +107,9 @@ onLaunch: function() {
 },
 ```
 
-每次页面 `onLoad` 时判断登录态，如果登录失效，重新登录获取 `code` 并替换原来存在 `stroage` 中的 `code`：
+- 每次页面 `onLoad` 时判断登录态，如果登录失效，重新登录获取 `code` 并替换原来存在 `stroage` 中的 `code`：
+
+
 ```JavaScript
 onLoad: function() {
 	const self = this
@@ -117,12 +127,14 @@ onLoad: function() {
 },
 ```
 
-之后调用 Authing SDK 微信相关接口的时候，使用下面的方法获取 `token`，这样就能确保此 `token` 是最新的。
+- 之后调用 Authing SDK 微信相关接口的时候，使用下面的方法获取 `token`，这样就能确保此 `token` 是最新的。
 ```javascript
 const code = wx.getStorageSync("code")
 ```
 
 ### 使用微信授权登录
+
+> 注：当前小程序版本，第一次获取用户信息需要用户主动点击开放组件。授权通过之后，后续可以直接调用接口。
 
 Authing 对微信授权协议进行了封装，使得开发者可以用几行代码实现使用微信身份登录。开发者只需要引导用户点击微信开放 button 组件，获取到点击事件 `e` 之后，将 `e.detail` 传给 `authing.loginWithWxapp` 方法即可。
 
@@ -181,7 +193,12 @@ wx.getSetting({
 
 > 此接口需小程序通过 **微信认证**。
 
-每次获取微信用户的手机号都需要用户授权，且必须用户主动点击开放组件 button。示例：
+开发者可以使用此接口让用户**绑定手机号**，但是不能用于通过手机号登录或注册新用户，如果想通过手机验证码登录，需要调用 [loginByPhoneCode](https://learn.authing.cn/authing/sdk/sdk-for-javascript#shi-yong-shou-ji-yan-zheng-ma-deng-lu) 方法。
+
+每次获取微信用户的手机号必须用户主动点击开放组件 button，且无主动调用 API。
+
+Authing 对换取用户手机号的协议进行了封装，开发者只需要引导用户点击微信开放 button 组件，获取到点击事件 e 之后，将 e.detail 传给 authing.bindPhone 方法即可。示例：
+
 ```html
 <button open-type="getPhoneNumber" bindgetphonenumber="bindPhone">绑定手机号</button>
 ```
@@ -228,6 +245,6 @@ changeAvatar: function() {
 其他和 JavaScript 版本相同：[https://github.com/Authing/authing-js-sdk](https://github.com/Authing/authing-js-sdk)，若存在问题，可以发 issue 指出。
 
  
-若想试用 async 需要自行搭建小程序的 ES6 环境。
+目前微信小程序还不支持 async/await 语法，如果你想使用，需要自行搭建小程序的 ES6 环境。
 
-了解更多报错的详情，请查看[错误代码](https://docs.authing.cn/#/quick_start/error_code)。
+了解更多报错的详情，请查看[错误代码](https://docs.authing.cn/authing/advanced/error-code)。
