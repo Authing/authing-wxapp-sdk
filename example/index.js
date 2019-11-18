@@ -309,10 +309,10 @@ ${JSON.stringify(userinfo, null, 4)}
     const self = this;
 
     // 微信 wx.login 返回的 code, 为了提高灵活性，开发者需要自己维护。
-    // 调用 authing.loginWithWeapp()、authing.bindPhone() 的时候请确保 code 是可用的。
+    // 调用 authing.loginWithWxapp()、authing.bindPhone() 的时候请确保 code 是可用的。
     const code = wx.getStorageSync("code")
 
-    authing.loginWithWeapp(code, e.detail).then(userinfo => {
+    authing.loginWithWxapp(code, e.detail).then(userinfo => {
       console.log(userinfo)
       self.setData({
         userinfo: userinfo,
