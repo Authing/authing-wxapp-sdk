@@ -1,9 +1,13 @@
 var Authing = require('../authing/authing.js');
 
 // Authing 用户池 ID
-const userPoolId = '5a9fa26cf8635a000185528c';
+const userPoolId = '5e4cdd055df3df65dc58b97d';
 const authing = new Authing({
-  userPoolId: userPoolId
+  userPoolId,
+  host: {
+    user: "http://localhost:5510/graphql",
+    oauth: "http://localhost:5510/graphql"
+  }
 })
 
 const dontLoginMd = `
@@ -14,7 +18,7 @@ const dontLoginMd = `
 
 Page({
 
-  onLoad: function() {
+  onLoad: function () {
     const self = this
     wx.checkSession({
       // 若丢失了登录态，通过 wx.login 重新获取
@@ -64,10 +68,17 @@ Page({
     displayEmailLogin: "none",
     displayPhoneLogin: "none",
 
-    showNicknameInput: false
+    showNicknameInput: false,
+
+    phone: {
+      countryCode: null,
+      phoneNumber: null,
+      purePhoneNumber: null,
+      watermark: null
+    }
   },
 
-  geneUserInfoMd: function(userinfo) {
+  geneUserInfoMd: function (userinfo) {
     return `
 \`\`\`
 ${JSON.stringify(userinfo, null, 4)}
@@ -75,7 +86,7 @@ ${JSON.stringify(userinfo, null, 4)}
 `
   },
 
-  formInputChange: function(e) {
+  formInputChange: function (e) {
     const id = e.currentTarget.id
     const value = e.detail.value
     if (id === "email") {
@@ -121,7 +132,7 @@ ${JSON.stringify(userinfo, null, 4)}
     }
   },
 
-  showDialog: function(title, msg) {
+  showDialog: function (title, msg) {
     this.setData({
       showDialog: true,
       dialogTitle: title,
@@ -129,7 +140,7 @@ ${JSON.stringify(userinfo, null, 4)}
     })
   },
 
-  closeDialog: function() {
+  closeDialog: function () {
     this.setData({
       showDialog: false,
       dialogMsg: "",
@@ -137,27 +148,27 @@ ${JSON.stringify(userinfo, null, 4)}
     })
   },
 
-  onToggleClick: function(e) {
+  onToggleClick: function (e) {
     const self = this;
     const id = e.currentTarget.id;
     const mo = id.replace('toggle-', '')
     const handlers = {
-      "emailRegister": function() {
+      "emailRegister": function () {
         self.setData({
           displayEmailRegister: self.data.displayEmailRegister === "none" ? "default" : "none"
         })
       },
-      "emailLogin": function() {
+      "emailLogin": function () {
         self.setData({
           displayEmailLogin: self.data.displayEmailLogin === "none" ? "default" : "none"
         })
       },
-      "userinfo": function() {
+      "userinfo": function () {
         self.setData({
           displayUserinfo: self.data.displayUserinfo === "none" ? "default" : "none"
         })
       },
-      "phoneLogin": function() {
+      "phoneLogin": function () {
         self.setData({
           displayPhoneLogin: self.data.displayPhoneLogin === "none" ? "default" : "none"
         })
@@ -166,7 +177,7 @@ ${JSON.stringify(userinfo, null, 4)}
     handlers[mo]()
   },
 
-  submitEmailRegisterForm: function(e) {
+  submitEmailRegisterForm: function (e) {
     const self = this
     const email = this.data.emailRegisterFormData.email;
     const password = this.data.emailRegisterFormData.password;
@@ -189,7 +200,7 @@ ${JSON.stringify(userinfo, null, 4)}
     })
   },
 
-  submitEmailLoginForm: function(e) {
+  submitEmailLoginForm: function (e) {
     const self = this;
     const email = this.data.emailLoginFormData.email;
     const password = this.data.emailLoginFormData.password;
@@ -209,7 +220,7 @@ ${JSON.stringify(userinfo, null, 4)}
     })
   },
 
-  sendPhoneCode: function() {
+  sendPhoneCode: function () {
     const self = this;
     const phone = this.data.phoneLoginFormData.phone
     if (!/^1[3456789]\d{9}$/.test(phone)) {
@@ -226,7 +237,7 @@ ${JSON.stringify(userinfo, null, 4)}
     })
   },
 
-  loginByPhoneCode: function() {
+  loginByPhoneCode: function () {
     const self = this;
     const phone = this.data.phoneLoginFormData.phone
     const phoneCode = this.data.phoneLoginFormData.phoneCode
@@ -254,13 +265,13 @@ ${JSON.stringify(userinfo, null, 4)}
     })
   },
 
-  showNicknameInput: function(e) {
+  showNicknameInput: function (e) {
     this.setData({
       showNicknameInput: true
     })
   },
 
-  updateNickname: function() {
+  updateNickname: function () {
     const self = this;
     const userId = this.data.userinfo._id;
     const nickname = this.data.newNickname;
@@ -287,59 +298,92 @@ ${JSON.stringify(userinfo, null, 4)}
     })
   },
 
-  changeAvatar: function() {
+  changeAvatar: function () {
     if (!this.data.userinfo) {
       return
     }
 
     const self = this;
     const userId = this.data.userinfo._id
-    authing.changeAvatar(userId).then(function(userinfo) {
+    authing.changeAvatar(userId).then(function (userinfo) {
       console.log(userinfo)
       self.setData({
         userinfo: userinfo,
         userinfoMd: self.geneUserInfoMd(userinfo)
       })
-    }).catch(function(err) {
+    }).catch(function (err) {
       console.log(err)
     })
   },
 
-  onGotUserInfo: function(e) {
+  onGotUserInfo: function (e) {
     const self = this;
 
     // 微信 wx.login 返回的 code, 为了提高灵活性，开发者需要自己维护。
     // 调用 authing.loginWithWxapp()、authing.bindPhone() 的时候请确保 code 是可用的。
     const code = wx.getStorageSync("code")
-
-    authing.loginWithWxapp(code, e.detail).then(userinfo => {
+    const phone = this.data.phone.phoneNumber
+    authing.loginWithWxapp({
+      code,
+      phone,
+      detail: e.detail,
+      overideProfile: true
+    }).then(userinfo => {
       console.log(userinfo)
       self.setData({
         userinfo: userinfo,
         userinfoMd: self.geneUserInfoMd(userinfo)
+      })
+      wx.login({
+        success(res) {
+          const code = res.code;
+          wx.setStorageSync("code", code)
+        }
       })
     }).catch(err => {
       self.showDialog("操作失败", err)
     })
   },
 
-  bindPhone: function(e) {
+  bindPhone: function (e) {
     const self = this
     console.log(e)
     // 请确保这个 code 是最新可用的
     const code = wx.getStorageSync("code")
-    authing.bindPhone(code, e.detail).then(function(userinfo) {
+    authing.bindPhone({ code, detail: e.detail }).then(function (userinfo) {
       console.log(userinfo)
       self.setData({
         userinfo: userinfo,
         userinfoMd: self.geneUserInfoMd(userinfo)
       })
-    }).catch(function(err) {
+      wx.login({
+        success(res) {
+          const code = res.code;
+          wx.setStorageSync("code", code)
+        }
+      })
+    }).catch(function (err) {
       self.showDialog("操作失败", err.message)
     })
   },
 
-  logout: function() {
+  getPhone: function (e) {
+    const code = wx.getStorageSync("code")
+    authing.getPhone({ code, detail: e.detail }).then(phone => {
+      console.log(phone)
+      this.setData({
+        phone
+      })
+      wx.login({
+        success(res) {
+          const code = res.code;
+          wx.setStorageSync("code", code)
+        }
+      })
+    })
+  },
+
+  logout: function () {
     if (!this.data.userinfo) {
       this.showDialog("退出登录失败", "请先登录")
       return

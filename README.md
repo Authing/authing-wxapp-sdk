@@ -138,6 +138,15 @@ const code = wx.getStorageSync("code")
 
 Authing 对微信授权协议进行了封装，使得开发者可以用几行代码实现使用微信身份登录。开发者只需要引导用户点击微信开放 button 组件，获取到点击事件 `e` 之后，将 `e.detail` 传给 `authing.loginWithWxapp` 方法即可。
 
+**同时，你也可以传入手机号（获取方法见下文），这样如果用户之前使用手机号注册过，登录获取到的将会是同一个用户。**
+
+参数：
+- options
+  - code: 微信 code，必填。
+  - detail: 用户头像授权事件 e.detail，必填。
+  - phone: 手机号，可选。
+  - overideProfile: 如果用户之前使用手机号注册过，是否替换调用户的头像和昵称，默认为 false。
+
 ```html
 <!-- example.wxml -->
 <button open-type="getUserInfo" lang="zh_CN" bindgetuserinfo="onGotUserInfo">获取微信头像</button>
@@ -151,12 +160,26 @@ onGotUserInfo: function(e) {
 	// 微信 wx.login 返回的 code, 为了提高灵活性，开发者需要自己维护。
 	// 调用 authing.loginWithWxapp()、authing.bindPhone() 的时候请确保 code 是可用的。
 	const code = wx.getStorageSync("code")
+	
+	// 获取到的用户手机号，获取方法见下文
+	const phone = this.data.phone.phoneNumber
 
-	authing.loginWithWxapp(code, e.detail).then(userinfo => {
+	authing.loginWithWxapp({
+		code,
+		detail: e.detail,
+		phone,
+		overideProfile: ture,
+	}).then(userinfo => {
 		console.log(userinfo)
 		self.setData({
 			userinfo: userinfo,
 		})
+		wx.login({
+			success(res) {
+				const code = res.code;
+				wx.setStorageSync("code", code)
+			}
+    })
 	}).catch(err => {
 		self.showDialog("操作失败", err)
 	})
@@ -174,7 +197,10 @@ wx.getSetting({
 			// 已经授权，可以直接调用 getUserInfo 获取头像昵称
 			wx.getUserInfo({
 				success: function(res) {
-					authing.loginWithWxapp(code, res).then(userinfo => {
+					authing.loginWithWxapp({
+						code,
+						detail: res
+					}).then(userinfo => {
 						console.log(userinfo)
 						self.setData({
 							userinfo: userinfo,
@@ -189,7 +215,56 @@ wx.getSetting({
 })
 ```
 
-### 获取并绑定手机号
+> 注⚠️：在获取用户信息之后，code 将会失效，所以这里调用了 `wx.login` 刷新 `code` 并保持至 `localStorage` 。
+
+
+### 获取手机号
+
+> 此接口需小程序通过 **微信认证**。
+
+> 注：获取手机号需要使用微信开放组件，不能直接调用微信开放接口。示例如下：
+
+```html
+<button open-type="getPhoneNumber" bindgetphonenumber="getPhone">获取手机号</button>
+```
+
+Authing 对微信授权协议进行了封装，使得开发者可以用几行代码实现获取用户手机号。开发者只需要引导用户点击微信开放 button 组件，获取到点击事件 `e` 之后，将 `e.detail` 传给 `authing.getPhone` 方法即可。
+
+参数：
+- options
+  - code: 微信 code，必填。
+  - detail: 手机号授权事件 e.detail，必填。
+
+```javascript
+getPhone: function(e) {
+	const code = wx.getStorageSync("code")
+	authing.getPhone({code, detail: e.detail}).then(phone => {
+		console.log(phone)
+		this.setData({
+			phone
+		})
+		wx.login({
+			success(res) {
+				const code = res.code;
+				wx.setStorageSync("code", code)
+			}
+		})
+	})
+},
+```
+
+回调参数 phone 示例如下：
+```javascript
+{
+	"phoneNumber": "1767xxxx6754", 
+	"purePhoneNumber": "176xxxx6754", 
+	"countryCode": "86"
+}
+```
+
+> 注⚠️：在获取手机号之后，code 将会失效，所以这里调用了 `wx.login` 刷新 `code` 并保持至 `localStorage` 。
+
+### 绑定手机号
 
 > 此接口需小程序通过 **微信认证**。
 
@@ -198,6 +273,11 @@ wx.getSetting({
 每次获取微信用户的手机号必须用户主动点击开放组件 button，且无主动调用 API。
 
 Authing 对换取用户手机号的协议进行了封装，开发者只需要引导用户点击微信开放 button 组件，获取到点击事件 e 之后，将 e.detail 传给 authing.bindPhone 方法即可。示例：
+
+参数：
+- options
+  - code: 微信 code，必填。
+  - detail: 手机号授权事件 e.detail，必填。
 
 ```html
 <button open-type="getPhoneNumber" bindgetphonenumber="bindPhone">绑定手机号</button>
@@ -209,16 +289,24 @@ bindPhone: function(e) {
 	console.log(e)
 	// 请确保这个 code 是最新可用的
 	const code = wx.getStorageSync("code")
-	authing.bindPhone(code, e.detail).then(function(userinfo) {
+	authing.bindPhone({code, detail: e.detail}).then(function(userinfo) {
 		console.log(userinfo)
 		self.setData({
 			userinfo: userinfo,
 		})
+		wx.login({
+			success(res) {
+				const code = res.code;
+				wx.setStorageSync("code", code)
+			}
+    })
 	}).catch(function(err) {
 		self.showDialog("操作失败", err.message)
 	})
 },
 ```
+
+> 注⚠️：在获取用户手机号之后，code 将会失效，所以这里调用了 `wx.login` 刷新 `code` 并保持至 `localStorage` 。
 
 ### 修改头像
 

@@ -4,7 +4,7 @@ var configs = require('./configs.js');
 var RSA = require('./utils/wxapp_rsa.js');
 const qiniuUploader = require("./utils/qiniuUploader");
 
-var _encryption = function(paw) {
+var _encryption = function (paw) {
   var encrypt_rsa = new RSA.RSAKey();
   encrypt_rsa = RSA.KEYUTIL.getKey(configs.openSSLSecret);
   var encStr = encrypt_rsa.encrypt(paw);
@@ -12,7 +12,7 @@ var _encryption = function(paw) {
   return encStr.toString();
 };
 
-var errorHandler = function(resolve, reject, res) {
+var errorHandler = function (resolve, reject, res) {
   var retData = res.data ? res.data : {
     code: 200
   };
@@ -26,7 +26,7 @@ var errorHandler = function(resolve, reject, res) {
   }
 }
 
-var Authing = function(opts) {
+var Authing = function (opts) {
 
   if (!opts.pureUsing) {
 
@@ -65,7 +65,7 @@ Authing.prototype = {
 
   constructor: Authing,
 
-  _initClient: function(token) {
+  _initClient: function (token) {
     if (token) {
       return new GraphQL({
         url: configs.services.user.host,
@@ -80,7 +80,7 @@ Authing.prototype = {
     }
   },
 
-  initUserClient: function(token) {
+  initUserClient: function (token) {
     if (token) {
       this.userAuth = {
         authed: true,
@@ -95,13 +95,13 @@ Authing.prototype = {
   },
 
 
-  initOAuthClient: function() {
+  initOAuthClient: function () {
     this.OAuthClient = new GraphQL({
       url: configs.services.oauth.host
     }, true);
   },
 
-  _auth: function() {
+  _auth: function () {
 
     if (!this._AuthService) {
       this._AuthService = new GraphQL({
@@ -117,13 +117,13 @@ Authing.prototype = {
     var self = this;
 
     return this._AuthService.query({
-        query: `
+      query: `
         query {
           getAccessTokenByAppSecret(secret: "${options.secret}", clientId:  "${options.userPoolId}")
         }
       `,
-      })
-      .then(function(data) {
+    })
+      .then(function (data) {
         self._AuthService = new GraphQL({
           url: configs.services.user.host,
           header: {
@@ -135,7 +135,7 @@ Authing.prototype = {
       });
   },
 
-  _loginFromLocalStorage: function() {
+  _loginFromLocalStorage: function () {
     var self = this;
     if (configs.inBrowser) {
       var _authing_token = wx.getStorageSync('_authing_token');
@@ -145,7 +145,7 @@ Authing.prototype = {
     }
   },
 
-  checkLoginStatus: function() {
+  checkLoginStatus: function () {
     var self = this;
     if (!self.userAuth.authSuccess) {
       return Promise.resolve({
@@ -162,14 +162,14 @@ Authing.prototype = {
           message
         }
       }`
-    }).then(function(res) {
+    }).then(function (res) {
       return res.data.checkLoginStatus;
-    }).catch(function(error) {
+    }).catch(function (error) {
       throw error;
     });
   },
 
-  _login: function(options) {
+  _login: function (options) {
     const self = this;
     if (!options) {
       throw 'options is not provided.';
@@ -205,25 +205,25 @@ Authing.prototype = {
         }
       `,
       variables: options
-    }).then(function(res) {
+    }).then(function (res) {
       self.initUserClient(res.data.login.token)
       return res.data.login;
     });
   },
 
-  login: function(options) {
+  login: function (options) {
     let self = this;
-    return this._login(options).then(function(user) {
+    return this._login(options).then(function (user) {
       if (user) {
         self.initUserClient(user.token);
       }
       return user;
-    }).catch(function(error) {
+    }).catch(function (error) {
       throw error;
     });
   },
 
-  register: function(options) {
+  register: function (options) {
     const self = this;
     if (!options) {
       throw 'options is not provided';
@@ -236,7 +236,7 @@ Authing.prototype = {
     }
 
     return this.UserClient.mutate({
-        mutation: `
+      mutation: `
         mutation register(
           $unionid: String,
             $email: String, 
@@ -280,16 +280,16 @@ Authing.prototype = {
             }
         }
       `,
-        variables: options
-      })
-      .then(function(res) {
+      variables: options
+    })
+      .then(function (res) {
         return res.data.register;
-      }).catch(function(error) {
+      }).catch(function (error) {
         throw error;
       });
   },
 
-  logout: function(_id) {
+  logout: function (_id) {
 
     if (!_id) {
       throw '_id is not provided';
@@ -309,13 +309,13 @@ Authing.prototype = {
     return this.update({
       _id: _id,
       tokenExpiredAt: '0'
-    }).catch(function(error) {
+    }).catch(function (error) {
       throw error;
     });
 
   },
 
-  user: function(options) {
+  user: function (options) {
     if (!options) {
       throw 'options is not provided';
     }
@@ -352,21 +352,21 @@ Authing.prototype = {
       }
       `,
       variables: options
-    }).then(function(res) {
+    }).then(function (res) {
       return res.data.user;
-    }).catch(function(error) {
+    }).catch(function (error) {
       throw error;
     });
   },
 
-  _uploadAvatar: function(options) {
+  _uploadAvatar: function (options) {
     return this.UserClient.query({
       query: `query qiNiuUploadToken {
         qiNiuUploadToken
       }`
-    }).then(function(data) {
+    }).then(function (data) {
       return data.data.qiNiuUploadToken;
-    }).then(function(token) {
+    }).then(function (token) {
       if (!token) {
         throw {
           graphQLErrors: [{
@@ -384,14 +384,14 @@ Authing.prototype = {
         method: 'post',
         body: formData
       });
-    }).then(function(data) {
+    }).then(function (data) {
       return data.json();
-    }).then(function(data) {
+    }).then(function (data) {
       if (data.key) {
         options.photo = 'https://usercontents.authing.cn/' + data.key
       }
       return options;
-    }).catch(function(e) {
+    }).catch(function (e) {
       if (e.graphQLErrors) {
         throw e;
       }
@@ -405,7 +405,7 @@ Authing.prototype = {
     })
   },
 
-  update: function(options) {
+  update: function (options) {
 
     var self = this;
 
@@ -500,14 +500,14 @@ Authing.prototype = {
         }
       `,
       variables: options
-    }).then(function(res) {
+    }).then(function (res) {
       return res.data.updateUser;
-    }).catch(function(error) {
+    }).catch(function (error) {
       throw error;
     });
   },
 
-  sendResetPasswordEmail: function(options) {
+  sendResetPasswordEmail: function (options) {
     if (!options) {
       throw 'options is not provided';
     }
@@ -532,15 +532,15 @@ Authing.prototype = {
         }
       `,
       variables: options
-    }).then(function(res) {
+    }).then(function (res) {
       return res.data.sendResetPasswordEmail;
-    }).catch(function(error) {
+    }).catch(function (error) {
       throw error;
     });
 
   },
 
-  verifyResetPasswordVerifyCode: function(options) {
+  verifyResetPasswordVerifyCode: function (options) {
 
     if (!options) {
       throw 'options is not provided';
@@ -570,15 +570,15 @@ Authing.prototype = {
         }
       `,
       variables: options
-    }).then(function(res) {
+    }).then(function (res) {
       return res.data.verifyResetPasswordVerifyCode;
-    }).catch(function(error) {
+    }).catch(function (error) {
       throw error;
     });
 
   },
 
-  changePassword: function(options) {
+  changePassword: function (options) {
     if (!options) {
       throw 'options is not provided';
     }
@@ -633,14 +633,14 @@ Authing.prototype = {
         }
       `,
       variables: options
-    }).then(function(res) {
+    }).then(function (res) {
       return res.data.changePassword;
-    }).catch(function(error) {
+    }).catch(function (error) {
       throw error;
     });
   },
 
-  sendVerifyEmail: function(options) {
+  sendVerifyEmail: function (options) {
     if (!options.email) {
       throw 'email in options is not provided';
     }
@@ -664,25 +664,25 @@ Authing.prototype = {
         }
       `,
       variables: options
-    }).then(function(res) {
+    }).then(function (res) {
       return res.data.sendVerifyEmail;
-    }).catch(function(error) {
+    }).catch(function (error) {
       throw error;
     });
   },
 
-  getVerificationCode: function(phone) {
+  getVerificationCode: function (phone) {
     if (!phone) {
       throw "phone is not provided";
     }
 
     const url = `${this.userHost}/send_smscode/${phone}/${this.userPoolId}`;
     console.log(url)
-    return new Promise(function(resolve, reject) {
+    return new Promise(function (resolve, reject) {
       wx.request({
         url: url,
         method: "GET",
-        complete: function(res) {
+        complete: function (res) {
           errorHandler(resolve, reject, res)
         }
       })
@@ -690,7 +690,7 @@ Authing.prototype = {
 
   },
 
-  loginByPhoneCode: function(options) {
+  loginByPhoneCode: function (options) {
     const self = this;
     if (!options) {
       throw Error("options is not provided.");
@@ -739,7 +739,7 @@ Authing.prototype = {
     });
   },
 
-  loginByLDAP: function(options) {
+  loginByLDAP: function (options) {
     if (!options) {
       throw Error("options is not provided.");
     }
@@ -789,7 +789,7 @@ Authing.prototype = {
     });
   },
 
-  unbindEmail: function(options) {
+  unbindEmail: function (options) {
     if (!options.user) {
       throw Error("user is not provided.");
     }
@@ -837,7 +837,7 @@ Authing.prototype = {
     })
   },
 
-  getAuthedAppList: function(options) {
+  getAuthedAppList: function (options) {
     if (!options) {
       throw Error("options is not provided.");
     }
@@ -899,7 +899,7 @@ Authing.prototype = {
     })
   },
 
-  revokeAuthedApp: function(options) {
+  revokeAuthedApp: function (options) {
     if (!options) {
       throw Error("options is not provided.");
     }
@@ -940,15 +940,15 @@ Authing.prototype = {
     })
   },
 
-  loginWithWxapp: function(code, wxGetUserInfoDetail) {
+  loginWithWxapp: function (options) {
     const self = this
-
-    return new Promise(function(resolve, reject) {
+    const { code, detail, phone, overideProfile } = options
+    return new Promise(function (resolve, reject) {
       const {
         errMsg,
         encryptedData,
         iv
-      } = wxGetUserInfoDetail
+      } = detail
       if (errMsg !== "getUserInfo:ok") {
         reject(errMsg)
         return
@@ -958,14 +958,16 @@ Authing.prototype = {
         url: `${self.oauthHost}/oauth/wechatapp/auth/${self.userPoolId}`,
         method: "POST",
         data: {
-          iv: iv,
-          encryptedData: encryptedData,
-          code: code
+          iv,
+          encryptedData,
+          code,
+          phone,
+          overideProfile
         },
-        complete: function(res) {
+        complete: function (res) {
           errorHandler(resolve, reject, res);
         },
-        success: function(res) {
+        success: function (res) {
           if (res.data.code === 200) {
             self.initUserClient(res.data.data.token)
           }
@@ -974,9 +976,10 @@ Authing.prototype = {
     })
   },
 
-  bindPhone: function(code, wxGetPhoneDetail) {
+  bindPhone: function (options) {
+    const { code, detail } = options
     const self = this
-    return new Promise(function(resolve, reject) {
+    return new Promise(function (resolve, reject) {
 
       // 先判断当前是否处于 authing 的登录状态
       if (!self.userAuth.authed) {
@@ -988,7 +991,7 @@ Authing.prototype = {
         errMsg,
         encryptedData,
         iv
-      } = wxGetPhoneDetail
+      } = detail
       if (errMsg !== "getPhoneNumber:ok") {
         reject(errMsg)
         return
@@ -1005,20 +1008,55 @@ Authing.prototype = {
         header: {
           authorization: self.userAuth.token ? self.userAuth.token : ""
         },
-        complete: function(res) {
+        complete: function (res) {
           errorHandler(resolve, reject, res);
         },
       })
     })
   },
 
+  getPhone: function (options) {
+    const self = this
+    const { code, detail } = options
+    return new Promise(function (resolve, reject) {
+
+      // 判断用户是否同意授权
+      const {
+        errMsg,
+        encryptedData,
+        iv
+      } = detail
+      if (errMsg !== "getPhoneNumber:ok") {
+        reject(errMsg)
+        return
+      }
+
+      wx.request({
+        url: `${self.oauthHost}/oauth/wxapp/phone/${self.userPoolId}`,
+        method: "POST",
+        data: {
+          iv,
+          encryptedData,
+          code
+        },
+        header: {
+          authorization: self.userAuth.token ? self.userAuth.token : ""
+        },
+        complete: function (res) {
+          errorHandler(resolve, reject, res);
+        },
+      })
+    })
+
+  },
+
   changeAvatar(userId) {
     // TODO: 这个 userId 可不可以省略
     const self = this;
-    return new Promise(function(resolve, reject) {
+    return new Promise(function (resolve, reject) {
       wx.chooseImage({
         count: 1,
-        success: function(res) {
+        success: function (res) {
           if (res.errMsg !== "chooseImage:ok") {
             reject(res.errMsg)
             return
@@ -1026,31 +1064,31 @@ Authing.prototype = {
           const filePath = res.tempFilePaths[0];
           const qiniuKey = filePath.split("//")[1].replace("tmp/", "avatar/wechatapp/")
           self.UserClient.query({
-              query: `query qiNiuUploadToken {
+            query: `query qiNiuUploadToken {
         qiNiuUploadToken
       }`
-            })
-            .then(function(res) {
+          })
+            .then(function (res) {
               const qiniuToken = res.data.qiNiuUploadToken
               qiniuUploader.upload(
                 filePath,
                 // 上传成功回调函数
-                function(res) {
+                function (res) {
                   if (res.key) {
                     const iamgeUrl = self.imageCDN + res.key
                     // 修改头像
                     self.update({
                       _id: userId,
                       photo: iamgeUrl
-                    }).then(function(userinfo) {
+                    }).then(function (userinfo) {
                       resolve(userinfo)
-                    }).catch(function(err) {
+                    }).catch(function (err) {
                       reject(err)
                     })
                   }
                 },
                 //   上传失败回调函数
-                function(err) {
+                function (err) {
                   reject(err)
                 },
                 // optiosn
@@ -1062,7 +1100,7 @@ Authing.prototype = {
               )
             })
             // 获取 uptoken 失败
-            .catch(function(err) {
+            .catch(function (err) {
               reject(err)
             })
         },
