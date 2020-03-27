@@ -1,8 +1,19 @@
-# authing-wxapp-sdk（Authing SDK for 小程序）
+authing-wxapp-sdk（Authing SDK for 小程序）
 
-> 更新时间： 2019-11-16
+- [准备工作](#%e5%87%86%e5%a4%87%e5%b7%a5%e4%bd%9c)
+	- [注册微信小程序开发账号](#%e6%b3%a8%e5%86%8c%e5%be%ae%e4%bf%a1%e5%b0%8f%e7%a8%8b%e5%ba%8f%e5%bc%80%e5%8f%91%e8%b4%a6%e5%8f%b7)
+	- [在 Authing 控制台开启微信小程序社会化登录](#%e5%9c%a8-authing-%e6%8e%a7%e5%88%b6%e5%8f%b0%e5%bc%80%e5%90%af%e5%be%ae%e4%bf%a1%e5%b0%8f%e7%a8%8b%e5%ba%8f%e7%a4%be%e4%bc%9a%e5%8c%96%e7%99%bb%e5%bd%95)
+- [下载代码](#%e4%b8%8b%e8%bd%bd%e4%bb%a3%e7%a0%81)
+- [引入文件](#%e5%bc%95%e5%85%a5%e6%96%87%e4%bb%b6)
+- [使用 SDK](#%e4%bd%bf%e7%94%a8-sdk)
+	- [初始化](#%e5%88%9d%e5%a7%8b%e5%8c%96)
+	- [获取小程序的 Code](#%e8%8e%b7%e5%8f%96%e5%b0%8f%e7%a8%8b%e5%ba%8f%e7%9a%84-code)
+	- [使用微信授权登录](#%e4%bd%bf%e7%94%a8%e5%be%ae%e4%bf%a1%e6%8e%88%e6%9d%83%e7%99%bb%e5%bd%95)
+	- [获取手机号](#%e8%8e%b7%e5%8f%96%e6%89%8b%e6%9c%ba%e5%8f%b7)
+	- [绑定手机号](#%e7%bb%91%e5%ae%9a%e6%89%8b%e6%9c%ba%e5%8f%b7)
+	- [修改头像](#%e4%bf%ae%e6%94%b9%e5%a4%b4%e5%83%8f)
+	- [其他接口](#%e5%85%b6%e4%bb%96%e6%8e%a5%e5%8f%a3)
 
-> 本次更新： 使用微信小程序登录；通过微信接口获取并绑定手机号。
 
 ![](https://usercontents.authing.cn/doc/assets/wechatapp_demo.png)
 
@@ -12,7 +23,7 @@ Github 地址：[https://github.com/Authing/authing-wxapp-sdk](https://github.co
 
 > **NOTE!** 在小程序中开发需要在小程序管理后台中配置域名，两个域名分别为：``https://users.authing.cn``和``https://oauth.authing.cn``
 
-## 准备使用 Authing 接入微信小程序登录
+## 准备工作
 
 ### 注册微信小程序开发账号
 
@@ -46,7 +57,7 @@ git clone https://github.com/Authing/authing-wxapp-sdk
 var Authing = require('path/to/authing/authing.js')
 ```
 
-## 使用
+## 使用 SDK
 
 ### 初始化
 
