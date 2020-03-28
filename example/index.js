@@ -1,13 +1,9 @@
 var Authing = require('../authing/authing.js');
 
 // Authing 用户池 ID
-const userPoolId = '5e4cdd055df3df65dc58b97d';
+const userPoolId = '5a9fa26cf8635a000185528c';
 const authing = new Authing({
-  userPoolId,
-  host: {
-    user: 'http://localhost:5510/graphql',
-    oauth: 'http://localhost:5510/graphql'
-  }
+  userPoolId
 })
 
 const dontLoginMd = `
