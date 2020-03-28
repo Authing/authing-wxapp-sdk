@@ -1032,7 +1032,7 @@ Authing.prototype = {
       }
 
       wx.request({
-        url: `${self.oauthHost}/oauth/wxapp/phone/${self.userPoolId}`,
+        url: `${self.oauthHost}/oauth/wechatapp/getphone/${self.userPoolId}`,
         method: "POST",
         data: {
           iv,

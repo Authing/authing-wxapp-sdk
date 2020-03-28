@@ -1,9 +1,13 @@
 var Authing = require('../authing/authing.js');
 
 // Authing 用户池 ID
-const userPoolId = '5a9fa26cf8635a000185528c';
+const userPoolId = '5e4cdd055df3df65dc58b97d';
 const authing = new Authing({
   userPoolId,
+  host: {
+    user: 'http://localhost:5510/graphql',
+    oauth: 'http://localhost:5510/graphql'
+  }
 })
 
 const dontLoginMd = `
@@ -364,18 +368,24 @@ ${JSON.stringify(userinfo, null, 4)}
   },
 
   getPhone: function (e) {
+    const self = this
     const code = wx.getStorageSync("code")
-    authing.getPhone({ code, detail: e.detail }).then(phone => {
-      console.log(phone)
-      this.setData({
-        phone
-      })
-      wx.login({
-        success(res) {
-          const code = res.code;
-          wx.setStorageSync("code", code)
-        }
-      })
+    wx.login({
+      success(res){
+        const code = res.code
+        authing.getPhone({ code, detail: e.detail }).then(phone => {
+          console.log(phone)
+          self.setData({
+            phone
+          })
+          wx.login({
+            success(res) {
+              const code = res.code;
+              wx.setStorageSync("code", code)
+            }
+          })
+        })
+      }
     })
   },
 
