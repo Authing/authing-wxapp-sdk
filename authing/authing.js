@@ -1106,7 +1106,74 @@ Authing.prototype = {
         },
       })
     })
-  }
+  },
+
+  metadata: function (_id) {
+    return this.UserClient.query({
+      query: `query userMetadata($_id: String!) {
+        userMetadata(_id: $_id) {
+        totalCount
+        list {
+            key
+            value
+          }
+        }
+      }`,
+      variables: {
+        _id
+      }
+    }).then(function (res) {
+      return res.data.userMetadata
+    }).catch(function (error) {
+      throw error;
+    });
+  },
+
+  setMetadata: function (input) {
+    return this.UserClient.mutate({
+      mutation: `
+    mutation setUserMetadata($input: SetUserMetadataInput!) {
+      setUserMetadata(input: $input) {
+        totalCount
+        list {
+          key
+          value
+        }
+      }
+    }  
+    `,
+      variables: {
+        input
+      }
+    }).then(function (res) {
+      return res.data.setUserMetadata
+    }).catch(function (error) {
+      throw error;
+    });
+  },
+
+  removeMetadata: function (input) {
+    return this.UserClient.mutate({
+      mutation: `
+      mutation removeUserMetadata($input: RemoveUserMetadataInput!){
+      removeUserMetadata(input: $input){
+        totalCount
+        list {
+          key
+          value
+        }
+      }
+    }
+    `,
+      variables: {
+        input
+      }
+    }).then(function (res) {
+      return res.data.removeUserMetadata
+    }).catch(function (error) {
+      throw error;
+    });
+  },
 }
 
 module.exports = Authing

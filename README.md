@@ -3,6 +3,7 @@ authing-wxapp-sdk（Authing SDK for 小程序）
 - [准备工作](#%e5%87%86%e5%a4%87%e5%b7%a5%e4%bd%9c)
 	- [注册微信小程序开发账号](#%e6%b3%a8%e5%86%8c%e5%be%ae%e4%bf%a1%e5%b0%8f%e7%a8%8b%e5%ba%8f%e5%bc%80%e5%8f%91%e8%b4%a6%e5%8f%b7)
 	- [在 Authing 控制台开启微信小程序社会化登录](#%e5%9c%a8-authing-%e6%8e%a7%e5%88%b6%e5%8f%b0%e5%bc%80%e5%90%af%e5%be%ae%e4%bf%a1%e5%b0%8f%e7%a8%8b%e5%ba%8f%e7%a4%be%e4%bc%9a%e5%8c%96%e7%99%bb%e5%bd%95)
+	- [开启小程序 async/await 支持（可选）](#%e5%bc%80%e5%90%af%e5%b0%8f%e7%a8%8b%e5%ba%8f-asyncawait-%e6%94%af%e6%8c%81%e5%8f%af%e9%80%89)
 - [下载代码](#%e4%b8%8b%e8%bd%bd%e4%bb%a3%e7%a0%81)
 - [引入文件](#%e5%bc%95%e5%85%a5%e6%96%87%e4%bb%b6)
 - [使用 SDK](#%e4%bd%bf%e7%94%a8-sdk)
@@ -12,7 +13,10 @@ authing-wxapp-sdk（Authing SDK for 小程序）
 	- [获取手机号](#%e8%8e%b7%e5%8f%96%e6%89%8b%e6%9c%ba%e5%8f%b7)
 	- [绑定手机号](#%e7%bb%91%e5%ae%9a%e6%89%8b%e6%9c%ba%e5%8f%b7)
 	- [修改头像](#%e4%bf%ae%e6%94%b9%e5%a4%b4%e5%83%8f)
+	- [用户自定义字段](#%e7%94%a8%e6%88%b7%e8%87%aa%e5%ae%9a%e4%b9%89%e5%ad%97%e6%ae%b5)
 	- [其他接口](#%e5%85%b6%e4%bb%96%e6%8e%a5%e5%8f%a3)
+- [Contributors ✨](#contributors-%e2%9c%a8)
+- [Get Help](#get-help)
 
 
 ![](https://usercontents.authing.cn/doc/assets/wechatapp_demo.png)
@@ -42,6 +46,12 @@ Github 地址：[https://github.com/Authing/authing-wxapp-sdk](https://github.co
 - 填入微信小程序的 AppId 和 AppSecret
 
 ![](https://usercontents.authing.cn/Xnip2019-11-16_17-34-34.png)
+
+### 开启小程序 async/await 支持（可选）
+
+打开「详情」，将 「ES6 转 ES5」 和「增强编译」勾选上。
+
+![](https://cdn.authing.cn/blog/20200409113007.png)
 
 ## 下载代码
 
@@ -339,11 +349,65 @@ changeAvatar: function() {
 },
 ```
 
+### 用户自定义字段
+
+用户自定义 Metadata 是除了 Authing 基础用户字段之外，开发者可以给用户添加的额外字段，属于 Authing 扩展能力的一部分。
+
+Metadata 是一组 key-value 值，开发者可以通过设置自定义字段，存储**少量**业务相关的数据。
+
+详细的接口请见： [用户自定义字段](https://docs.authing.cn/authing/sdk/sdk-for-node/user-metadata) 。
+
+调用示例：
+
+```javascript
+const userId = this.data.userinfo._id
+authing.metadata(userId).then(async metadata => {
+	console.log("初始用户自定义字段为空：", metadata)
+
+	await authing.setMetadata({
+		_id: userId,
+		key: "KEY",
+		value: "VALUE"
+	})
+
+	metadata = await authing.metadata(userId)
+	console.log("setMetadata 之后的用户自定义字段：", metadata)
+
+	await authing.removeMetadata({
+		_id: userId,
+		key: "KEY"
+	})
+
+	metadata = await authing.metadata(userId)
+	console.log("removeMetadata 之后的用户自定义字段：", metadata)
+})
+```
+
 ### 其他接口
 
 其他和 JavaScript 版本相同：[https://github.com/Authing/authing-js-sdk](https://github.com/Authing/authing-js-sdk)，若存在问题，可以发 issue 指出。
 
- 
-目前微信小程序还不支持 async/await 语法，如果你想使用，需要自行搭建小程序的 ES6 环境。
-
 了解更多报错的详情，请查看[错误代码](https://docs.authing.cn/authing/advanced/error-code)。
+
+## Contributors ✨
+
+Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
+
+<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
+<!-- prettier-ignore-start -->
+<!-- markdownlint-disable -->
+<table>
+  <tr>
+    <td align="center"><a href="https://github.com/liaochangjiang"><img src="https://avatars2.githubusercontent.com/u/35447896?s=460&u=6ac1fa7c0cb47d61bdb79f8393128dd61cf11fac&v=4" width="100px;" alt=""/><br /><sub><b>liaochangjiang</b></sub></a><br /></td>
+    <td align="center"><a href="https://github.com/leinue"><img src="https://avatars2.githubusercontent.com/u/2469688?s=460&u=d8552f7013594a3758863be7da96ab23983b5eaf&v=4" width="100px;" alt=""/><br /><sub><b>leinue</b></sub></a><br /></td>
+    <td align="center"><a href="https://github.com/Meeken1998"><img src="https://avatars2.githubusercontent.com/u/42825670?s=460&u=5a2102caec919d08407a3a2d412cd17e7c61171c&v=4" width="100px;" alt=""/><br /><sub><b>Meeken1998</b></sub></a><br /></td>
+		<td align="center"><a href="https://github.com/vincentCheng"><img src="https://avatars2.githubusercontent.com/u/6327228" width="100px;" alt=""/><br /><sub><b>vincentCheng</b></sub></a><br /></td>
+  </tr>
+</table>
+
+<!-- markdownlint-enable -->
+<!-- prettier-ignore-end -->
+<!-- ALL-CONTRIBUTORS-LIST:END -->
+## Get Help
+
+Join us on Gitter: [#authing-chat](https://gitter.im/authing-chat/community)

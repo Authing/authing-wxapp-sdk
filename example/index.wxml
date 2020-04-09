@@ -110,6 +110,11 @@
 
       <view class="item">
         <input type="checkbox" />
+        <label for="box-1" bindtap="testMetadata">测试用户自定义字段</label>
+      </view>
+
+      <view class="item">
+        <input type="checkbox" />
         <label for="box-1" bindtap="logout">点击退出登录</label>
       </view>
 
