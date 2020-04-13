@@ -1066,6 +1066,28 @@ Authing.prototype = {
 
   },
 
+  decrypt: function (options) {
+    const self = this
+    const { code, encryptedData, iv } = options
+    return new Promise(function (resolve, reject) {
+      wx.request({
+        url: `${self.oauthHost}/oauth/wechatapp/decrypt/${self.userPoolId}`,
+        method: "POST",
+        data: {
+          iv,
+          encryptedData,
+          code
+        },
+        header: {
+          authorization: self.userAuth.token ? self.userAuth.token : ""
+        },
+        complete: function (res) {
+          errorHandler(resolve, reject, res);
+        },
+      })
+    })
+  },
+
   changeAvatar(userId) {
     // TODO: 这个 userId 可不可以省略
     const self = this;

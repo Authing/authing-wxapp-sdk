@@ -115,6 +115,13 @@
 
       <view class="item">
         <input type="checkbox" />
+        <label for="box-1">
+          <button open-type="getUserInfo" lang="zh_CN" bindgetuserinfo="testDecryptData" style="border-style: none;outline: none;border: none;">测试解密数据</button>
+        </label>
+      </view>
+
+      <view class="item">
+        <input type="checkbox" />
         <label for="box-1" bindtap="logout">点击退出登录</label>
       </view>
 

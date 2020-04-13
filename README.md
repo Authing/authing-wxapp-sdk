@@ -14,6 +14,7 @@ authing-wxapp-sdk（Authing SDK for 小程序）
 	- [绑定手机号](#%e7%bb%91%e5%ae%9a%e6%89%8b%e6%9c%ba%e5%8f%b7)
 	- [修改头像](#%e4%bf%ae%e6%94%b9%e5%a4%b4%e5%83%8f)
 	- [用户自定义字段](#%e7%94%a8%e6%88%b7%e8%87%aa%e5%ae%9a%e4%b9%89%e5%ad%97%e6%ae%b5)
+	- [解密微信接口数据](#%e8%a7%a3%e5%af%86%e5%be%ae%e4%bf%a1%e6%8e%a5%e5%8f%a3%e6%95%b0%e6%8d%ae)
 	- [其他接口](#%e5%85%b6%e4%bb%96%e6%8e%a5%e5%8f%a3)
 - [Contributors ✨](#contributors-%e2%9c%a8)
 - [Get Help](#get-help)
@@ -381,6 +382,71 @@ authing.metadata(userId).then(async metadata => {
 	metadata = await authing.metadata(userId)
 	console.log("removeMetadata 之后的用户自定义字段：", metadata)
 })
+```
+
+
+
+
+### 解密微信接口数据
+
+我们提供给开发者解密微信加密数据的接口（[相关微信官方文档在此](https://developers.weixin.qq.com/miniprogram/dev/framework/open-ability/signature.html)），出于安全性考虑，我们不会将 session_key 下发。
+
+![](https://cdn.authing.cn/blog/20200413120357.png)
+
+开发者需要将以下三个参数传入 `authing.decrypt` 函数：
+- code
+- iv
+- encryptedData
+
+下面这个例子用于解密 `getUserInfo` 开放事件的原始数据：
+
+```html
+ <button open-type="getUserInfo" lang="zh_CN" bindgetuserinfo="testDecryptData"">测试解密数据</button>
+```
+
+```javascript
+testDecryptData: async function(e) {
+    console.log(e)
+    const {
+      encryptedData,
+      iv,
+    } = e.detail
+    wx.login({
+      success(res) {
+        const code = res.code;
+        wx.setStorageSync("code", code)
+        authing.decrypt({
+          code,
+          encryptedData,
+          iv
+        }).then(res => {
+          console.log(res)
+        }).catch(error => {
+          console.error(error)
+        })
+      }
+    })
+  }
+```
+
+获取到的解密过后的原始数据如下：
+
+```javascript
+{
+	avatarUrl: "https://wx.qlogo.cn/mmopen/vi_32/8INxh2bxDMiaU05jLqvWBszALu2u8Qw4iaxV58v4fERaDWV8yunE7icNiahJdxkOCNfG57zPNRyADo0VWfibiamTMVvQ/132",
+	city: "海淀",
+	country: "中国"
+	gender: 1,
+	language: "zh_CN",
+	nickName: "xxxx",
+	openId: "xxxxxxxxx",
+	province: "北京",
+	unionId: "xxxxxxxxxx",
+	watermark:{
+		appid: "xxxxxxxxxx",
+		timestamp: 1586750416
+	}
+}
 ```
 
 ### 其他接口

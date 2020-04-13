@@ -434,5 +434,28 @@ ${JSON.stringify(userinfo, null, 4)}
       metadata = await authing.metadata(userId)
       console.log("removeMetadata 之后的用户自定义字段：", metadata)
     })
+  },
+
+  testDecryptData: async function(e) {
+    console.log(e)
+    const {
+      encryptedData,
+      iv,
+    } = e.detail
+    wx.login({
+      success(res) {
+        const code = res.code;
+        wx.setStorageSync("code", code)
+        authing.decrypt({
+          code,
+          encryptedData,
+          iv
+        }).then(res => {
+          console.log(res)
+        }).catch(error => {
+          console.error(error)
+        })
+      }
+    })
   }
 });
