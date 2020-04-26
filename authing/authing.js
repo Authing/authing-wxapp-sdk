@@ -1,7 +1,7 @@
 var gql = require('./graphql/wxgql.js');
 var GraphQL = gql.GraphQL;
 var configs = require('./configs.js');
-var RSA = require('./utils/wxapp_rsa.js');
+var RSA = require('./utils/wxapp_rsa.min.js');
 const qiniuUploader = require("./utils/qiniuUploader");
 
 var _encryption = function (paw) {
