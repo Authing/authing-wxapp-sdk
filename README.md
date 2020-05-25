@@ -75,17 +75,20 @@ const authing = new Authing({
 
 之后就可以调用其他的方法了，比如：
 
-```
-authing.login({
-	email: "USER_EMAIL",
-	password: "USER_PASSWORD"
-}).then(userinfo => {
-	this.setData({
-		userinfo: userinfo,
-	})
-}).catch(err => {
-	this.showDialog("登录失败！", err.message)
-})
+```js
+authing
+  .login({
+    email: 'USER_EMAIL',
+    password: 'USER_PASSWORD',
+  })
+  .then(userinfo => {
+    this.setData({
+      userinfo: userinfo,
+    })
+  })
+  .catch(err => {
+    this.showDialog('登录失败！', err.message)
+  })
 ```
 
 ### 获取小程序的 Code
