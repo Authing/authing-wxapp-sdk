@@ -2,12 +2,25 @@
 
 ## 目录
 
-- [准备工作](#%e5%87%86%e5%a4%87%e5%b7%a5%e4%bd%9c) - [注册微信小程序开发账号](#%e6%b3%a8%e5%86%8c%e5%be%ae%e4%bf%a1%e5%b0%8f%e7%a8%8b%e5%ba%8f%e5%bc%80%e5%8f%91%e8%b4%a6%e5%8f%b7) - [在 Authing 控制台开启微信小程序社会化登录](#%e5%9c%a8-authing-%e6%8e%a7%e5%88%b6%e5%8f%b0%e5%bc%80%e5%90%af%e5%be%ae%e4%bf%a1%e5%b0%8f%e7%a8%8b%e5%ba%8f%e7%a4%be%e4%bc%9a%e5%8c%96%e7%99%bb%e5%bd%95) - [开启小程序 async/await 支持（可选）](#%e5%bc%80%e5%90%af%e5%b0%8f%e7%a8%8b%e5%ba%8f-asyncawait-%e6%94%af%e6%8c%81%e5%8f%af%e9%80%89)
+- [准备工作](#%e5%87%86%e5%a4%87%e5%b7%a5%e4%bd%9c)
+	- [注册微信小程序开发账号](#%e6%b3%a8%e5%86%8c%e5%be%ae%e4%bf%a1%e5%b0%8f%e7%a8%8b%e5%ba%8f%e5%bc%80%e5%8f%91%e8%b4%a6%e5%8f%b7)
+	- [在 Authing 控制台开启微信小程序社会化登录](#%e5%9c%a8-authing-%e6%8e%a7%e5%88%b6%e5%8f%b0%e5%bc%80%e5%90%af%e5%be%ae%e4%bf%a1%e5%b0%8f%e7%a8%8b%e5%ba%8f%e7%a4%be%e4%bc%9a%e5%8c%96%e7%99%bb%e5%bd%95)
+	- [开启小程序 async/await 支持（可选）](#%e5%bc%80%e5%90%af%e5%b0%8f%e7%a8%8b%e5%ba%8f-asyncawait-%e6%94%af%e6%8c%81%e5%8f%af%e9%80%89)
 - [下载代码](#%e4%b8%8b%e8%bd%bd%e4%bb%a3%e7%a0%81)
 - [引入文件](#%e5%bc%95%e5%85%a5%e6%96%87%e4%bb%b6)
-- [使用 SDK](#%e4%bd%bf%e7%94%a8-sdk) - [初始化](#%e5%88%9d%e5%a7%8b%e5%8c%96) - [获取小程序的 Code](#%e8%8e%b7%e5%8f%96%e5%b0%8f%e7%a8%8b%e5%ba%8f%e7%9a%84-code) - [使用微信授权登录](#%e4%bd%bf%e7%94%a8%e5%be%ae%e4%bf%a1%e6%8e%88%e6%9d%83%e7%99%bb%e5%bd%95) - [获取手机号](#%e8%8e%b7%e5%8f%96%e6%89%8b%e6%9c%ba%e5%8f%b7) - [绑定手机号](#%e7%bb%91%e5%ae%9a%e6%89%8b%e6%9c%ba%e5%8f%b7) - [修改头像](#%e4%bf%ae%e6%94%b9%e5%a4%b4%e5%83%8f) - [用户自定义字段](#%e7%94%a8%e6%88%b7%e8%87%aa%e5%ae%9a%e4%b9%89%e5%ad%97%e6%ae%b5) - [解密微信接口数据](#%e8%a7%a3%e5%af%86%e5%be%ae%e4%bf%a1%e6%8e%a5%e5%8f%a3%e6%95%b0%e6%8d%ae) - [其他接口](#%e5%85%b6%e4%bb%96%e6%8e%a5%e5%8f%a3)
+- [使用 SDK](#%e4%bd%bf%e7%94%a8-sdk)
+	- [初始化](#%e5%88%9d%e5%a7%8b%e5%8c%96)
+	- [获取小程序的 Code](#%e8%8e%b7%e5%8f%96%e5%b0%8f%e7%a8%8b%e5%ba%8f%e7%9a%84-code)
+	- [使用微信授权登录](#%e4%bd%bf%e7%94%a8%e5%be%ae%e4%bf%a1%e6%8e%88%e6%9d%83%e7%99%bb%e5%bd%95)
+	- [获取手机号](#%e8%8e%b7%e5%8f%96%e6%89%8b%e6%9c%ba%e5%8f%b7)
+	- [绑定手机号](#%e7%bb%91%e5%ae%9a%e6%89%8b%e6%9c%ba%e5%8f%b7)
+	- [修改头像](#%e4%bf%ae%e6%94%b9%e5%a4%b4%e5%83%8f)
+	- [用户自定义字段](#%e7%94%a8%e6%88%b7%e8%87%aa%e5%ae%9a%e4%b9%89%e5%ad%97%e6%ae%b5)
+	- [解密微信接口数据](#%e8%a7%a3%e5%af%86%e5%be%ae%e4%bf%a1%e6%8e%a5%e5%8f%a3%e6%95%b0%e6%8d%ae)
+	- [其他接口](#%e5%85%b6%e4%bb%96%e6%8e%a5%e5%8f%a3)
 - [Contributors ✨](#contributors-%e2%9c%a8)
 - [Get Help](#get-help)
+
 
 ![](https://usercontents.authing.cn/doc/assets/wechatapp_demo.png)
 
