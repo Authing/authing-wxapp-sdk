@@ -77,8 +77,8 @@ var Authing = require('path/to/authing/authing.js')
 
 如果你对 Authing 用户池这个概念不是很了解，可以查阅 Authing 官方文档：
 
-- [基础概念](https://learn.authing.cn/authing/quickstart/basic)
-- [如何获取用户池 ID?](https://learn.authing.cn/authing/others/faq)
+- [基础概念](https://docs.authing.cn/quickstart/basic.html)
+- [如何获取用户池 ID?](https://docs.authing.cn/others/faq.html#%E5%A6%82%E4%BD%95%E8%8E%B7%E5%8F%96-userpool-id-%E5%92%8C-userpool-secret)
 
 ```javascript
 const authing = new Authing({
@@ -304,7 +304,7 @@ getPhone: function(e) {
 
 > 此接口需小程序通过 **微信认证**。
 
-开发者可以使用此接口让用户**绑定手机号**，但是不能用于通过手机号登录或注册新用户，如果想通过手机验证码登录，需要调用 [loginByPhoneCode](https://learn.authing.cn/authing/sdk/sdk-for-javascript#shi-yong-shou-ji-yan-zheng-ma-deng-lu) 方法。
+开发者可以使用此接口让用户**绑定手机号**，但是不能用于通过手机号登录或注册新用户，如果想通过手机验证码登录，需要调用 [loginByPhoneCode](https://docs.authing.cn/sdk/sdk-for-node/authentication/AuthenticationClient.html#%E4%BD%BF%E7%94%A8%E6%89%8B%E6%9C%BA%E5%8F%B7%E9%AA%8C%E8%AF%81%E7%A0%81%E7%99%BB%E5%BD%95) 方法。
 
 每次获取微信用户的手机号必须用户主动点击开放组件 button，且无主动调用 API。
 
@@ -374,7 +374,7 @@ changeAvatar: function() {
 
 Metadata 是一组 key-value 值，开发者可以通过设置自定义字段，存储**少量**业务相关的数据。
 
-详细的接口请见： [用户自定义字段](https://docs.authing.cn/authing/sdk/sdk-for-node/user-metadata) 。
+详细的接口请见： [用户自定义字段](https://docs.authing.cn/user/udf.html) 。
 
 调用示例：
 
