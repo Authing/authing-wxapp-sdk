@@ -1,0 +1,1 @@
+authing-wxapp-sdk, authing-js-sdk runs in Wechat Miniprogram enviroment.
