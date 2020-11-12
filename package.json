@@ -5,6 +5,9 @@
   "repository": "git@git.authing.co:sdk/authing-wxapp-sdk.git",
   "author": "cj <cj@authing.cn>",
   "license": "MIT",
+  "scripts": {
+    "build": "tsc"
+  },
   "dependencies": {
     "authing-js-sdk": "file:../authing-js-sdk",
     "wx-axios": "^0.0.7"
