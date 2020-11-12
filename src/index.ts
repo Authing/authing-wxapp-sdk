@@ -5,12 +5,14 @@ import {
 import { encryptFunction } from "./encrypt";
 import { GraphqlClient } from "./GraphqlClient";
 import { HttpClient } from "./HttpClient";
+import { MiniprogramTokenProvider } from "./TokenProvider";
 
 export class AuthenticationClient extends BaseAuthenticationClient {
   constructor(options: AuthenticationClientOptions) {
     options.encryptFunction = encryptFunction;
     options.httpClient = HttpClient;
     options.graphqlClient = GraphqlClient;
+    options.tokenProvider = MiniprogramTokenProvider;
     super(options);
   }
 
