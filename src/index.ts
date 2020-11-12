@@ -22,22 +22,23 @@ export class AuthenticationClient extends BaseAuthenticationClient {
    */
   async loginByCode(
     code: string,
-    options: {
+    options?: {
       iv?: string;
       encryptedData?: string;
-      phone?: string;
       // wx.getUserInfo 返回的 rawData, 里面包含了原始用户数据
       rawData?: string;
     }
   ) {
     const api = `${this.options.host}/connections/social/wechat-miniprogram/auth`;
-    const { iv, encryptedData, phone, rawData } = options;
-    const data = await this.httpClient.request({
+    options = options || {};
+    const { iv, encryptedData, rawData } = options;
+    const user = await this.httpClient.request({
       method: "POST",
       url: api,
-      data: { code, iv, encryptedData, phone, rawData },
+      data: { code, iv, encryptedData, rawData },
     });
-    return data;
+    this.tokenProvider.setUser(user);
+    return user;
   }
 
   /**
@@ -46,12 +47,13 @@ export class AuthenticationClient extends BaseAuthenticationClient {
    */
   async loginByPhone(code: string, iv: string, encryptedData: string) {
     const api = `${this.options.host}/connections/social/wechat-miniprogram/auth-by-phone`;
-    const data = await this.httpClient.request({
+    const user = await this.httpClient.request({
       method: "POST",
       url: api,
       data: { code, iv, encryptedData },
     });
-    return data;
+    this.tokenProvider.setUser(user);
+    return user;
   }
 
   /**
@@ -66,5 +68,37 @@ export class AuthenticationClient extends BaseAuthenticationClient {
       data: { code, iv, encryptedData },
     });
     return data;
+  }
+
+  async updateAvatar() {
+    this.checkLoggedIn();
+    const { tempFilePaths } = await wx.chooseImage({
+      count: 1,
+    });
+    const filePath = tempFilePaths[0];
+    const uploadTask = new Promise((resolve, reject) => {
+      wx.uploadFile({
+        url: `${this.options.host}/api/v2/upload?folder=avatar`,
+        name: "file",
+        filePath,
+        success: (res: any) => {
+          const data = JSON.parse(res.data);
+          const { url } = data.data;
+          resolve(url as string);
+        },
+        fail: reject,
+      });
+    });
+
+    let url: string;
+    try {
+      // @ts-ignore
+      url = await uploadTask;
+    } catch (error) {
+      throw new Error(`上传图片失败: ${error.message}`);
+    }
+    const user = await this.updateProfile({ photo: url });
+    this.setCurrentUser(user);
+    return user;
   }
 }
