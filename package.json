@@ -9,7 +9,10 @@
     "build": "tsc"
   },
   "dependencies": {
-    "authing-js-sdk": "file:../authing-js-sdk",
+    "authing-js-sdk": "4.5.0-alpha.5",
     "wx-axios": "^0.0.7"
+  },
+  "devDependencies": {
+    "@types/node": "^14.14.7"
   }
 }
