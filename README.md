@@ -92,7 +92,7 @@ yarn add authing-wxapp-sdk
 > 你可以在控制台的 **应用** 中查看自己的应用列表。
 
 ```js
-import { AuthenticationClient } from "authing-js-sdk";
+const { AuthenticationClient } = require("authing-wxapp-sdk")
 
 const authing = new AuthenticationClient({
   appId: "YOUR_APP_ID",
