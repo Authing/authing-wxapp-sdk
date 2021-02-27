@@ -2,20 +2,29 @@
 
 Authing 小程序 SDK （`authing-wxapp-sdk`） 适用于在微信小程序环境下使用，以 [authing-js-sdk](https://github.com/Authing/authing.js) 为基础，对微信小程序环境做了适配。你可以使用 `authing-js-sdk` [AuthenticationClient](https://docs.authing.co/sdk/sdk-for-node/authentication/AuthenticationClient.html) 中的所有方法，如获取、修改用户资料，添加用户自定义字段等。同时专门在小程序环境下使用的 **通过微信授权获取用户手机号**、 **使用微信授权登录**、**使用微信授权的手机号登录** 等方法。
 
-- [在 Authing 中配置小程序登录](#在-authing-中配置小程序登录)
-- [安装](#安装)
-  - [安装 npm 包](#安装-npm-包)
-  - [在小程序开发者工具中构建 npm](#在小程序开发者工具中构建-npm)
-- [初始化](#初始化)
-- [使用方法](#使用方法)
-- [API Reference](#api-reference)
-  - [loginByCode](#loginbycode)
-  - [loginByPhone](#loginbyphone)
-  - [getPhone](#getphone)
-  - [updateAvatar](#updateavatar)
-- [最佳实践](#最佳实践)
-- [错误处理](#错误处理)
-- [获取帮助](#获取帮助)
+- [Authing - 微信小程序](#authing---微信小程序)
+  - [在 Authing 中配置小程序登录](#在-authing-中配置小程序登录)
+  - [安装](#安装)
+    - [安装 npm 包](#安装-npm-包)
+    - [在小程序开发者工具中构建 npm](#在小程序开发者工具中构建-npm)
+  - [初始化](#初始化)
+  - [使用方法](#使用方法)
+  - [API Reference](#api-reference)
+    - [loginByCode](#loginbycode)
+      - [参数](#参数)
+      - [示例](#示例)
+    - [loginByPhone](#loginbyphone)
+      - [参数](#参数-1)
+      - [示例](#示例-1)
+    - [getPhone](#getphone)
+      - [参数](#参数-2)
+      - [示例](#示例-2)
+    - [updateAvatar](#updateavatar)
+      - [示例](#示例-3)
+  - [最佳实践](#最佳实践)
+  - [错误处理](#错误处理)
+  - [Contributors ✨](#contributors-)
+  - [获取帮助](#获取帮助)
 
 
 ## 在 Authing 中配置小程序登录
@@ -78,32 +87,28 @@ yarn add authing-wxapp-sdk
 
 ## 初始化
 
-`AuthenticationClient` 初始化需要传入用户池 ID (`userPoolId`)：
+`AuthenticationClient` 初始化需要传入`AppId` （应用 ID）：
 
-> 你可以在此了解[如何获取 UserPoolId](https://docs.authing.cn/others/faq.html)，如果你对用户池的概念不是很了解，可以在此[了解 Authing 系统的核心概念](https://docs.authing.cn/quickstart/basic.html)。
+> 你可以在控制台的 **应用** 中查看自己的应用列表。
 
-
-```javascript
-const { AuthenticationClient } = require("authing-wxapp-sdk")
+```js
+import { AuthenticationClient } from "authing-js-sdk";
 
 const authing = new AuthenticationClient({
-  userPoolId: "YOUR_USERPOOL_ID",
-})
+  appId: "YOUR_APP_ID",
+});
 ```
 
 完整参数列表如下:
 
-- `userPoolId`: 用户池 ID。
-- `accessToken`: 通过用户的 token 初始化 SDK 。
+- `appId`: Authing 应用 ID（必填）；
+- `accessToken`: 通过用户的 token 初始化 SDK（可选，你可以在前端 localStorage 中缓存用户 token，实现记住登录的目的） 。
 - `timeout`: 请求超时时间，单位为毫秒，默认为 10000 （10 秒）。
 - `onError`: 错误处理函数，你可以用其来全局捕捉 Authing 客户端请求的所有异常。函数定义为：
-
 
 ```js
 (code: number, message: string, data: any) => void
 ```
-
-> 完整的错误代码请见[此文档](https://docs.authing.cn/advanced/error-code.html)。
 
 - `host`: Authing 服务器地址。如果你使用的是公有云版本，请忽略请参数。如果你使用的是私有化部署的版本，此参数必填。格式如下: `https://authing-api.mydomain.com`，最后不带 `/`。
 
