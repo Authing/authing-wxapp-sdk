@@ -1,31 +1,8 @@
-# Authing - 微信小程序
+# SDK for 微信小程序
 
-Authing 小程序 SDK （`authing-wxapp-sdk`） 适用于在微信小程序环境下使用，以 [authing-js-sdk](https://github.com/Authing/authing.js) 为基础，对微信小程序环境做了适配。你可以使用 `authing-js-sdk` [AuthenticationClient](https://docs.authing.co/sdk/sdk-for-node/authentication/AuthenticationClient.html) 中的所有方法，如获取、修改用户资料，添加用户自定义字段等。同时专门在小程序环境下使用的 **通过微信授权获取用户手机号**、 **使用微信授权登录**、**使用微信授权的手机号登录** 等方法。
+> GitHub 源码地址：[https://github.com/authing/authing-wxapp-sdk](https://github.com/authing/authing-wxapp-sdk)
 
-- [Authing - 微信小程序](#authing---微信小程序)
-  - [在 Authing 中配置小程序登录](#在-authing-中配置小程序登录)
-  - [安装](#安装)
-    - [安装 npm 包](#安装-npm-包)
-    - [在小程序开发者工具中构建 npm](#在小程序开发者工具中构建-npm)
-  - [初始化](#初始化)
-  - [使用方法](#使用方法)
-  - [API Reference](#api-reference)
-    - [loginByCode](#loginbycode)
-      - [参数](#参数)
-      - [示例](#示例)
-    - [loginByPhone](#loginbyphone)
-      - [参数](#参数-1)
-      - [示例](#示例-1)
-    - [getPhone](#getphone)
-      - [参数](#参数-2)
-      - [示例](#示例-2)
-    - [updateAvatar](#updateavatar)
-      - [示例](#示例-3)
-  - [最佳实践](#最佳实践)
-  - [错误处理](#错误处理)
-  - [Contributors ✨](#contributors-)
-  - [获取帮助](#获取帮助)
-
+Authing 小程序 SDK （`authing-wxapp-sdk`） 适用于在微信小程序环境下使用，以 [authing-js-sdk](https://github.com/authing/authing.js) 为基础，对微信小程序环境做了适配。你可以使用 `authing-js-sdk` [AuthenticationClient](https://docs.authing.cn/v2/reference/sdk-for-node/authentication/AuthenticationClient.html) 中的所有方法，如获取、修改用户资料，添加用户自定义字段等。同时专门在小程序环境下使用的 **通过微信授权获取用户手机号**、 **使用微信授权登录**、**使用微信授权的手机号登录** 等方法。
 
 ## 在 Authing 中配置小程序登录
 
@@ -35,6 +12,7 @@ Authing 小程序 SDK （`authing-wxapp-sdk`） 适用于在微信小程序环�
 <summary><strong>配置小程序登录</strong></summary>
 
 1. 前先前往[微信开放平台](https://mp.weixin.qq.com/)注册一个微信小程序开发账号
+
 - **如果你需要获取用户手机号，需要通过微信认证。**
 - 将 `core.authing.cn` 加入微信的 **request 合法域名**:
 
@@ -54,10 +32,9 @@ Authing 小程序 SDK （`authing-wxapp-sdk`） 适用于在微信小程序环�
 
 ![](https://cdn.authing.cn/blog/20201112143351.png)
 
-
 </details>
 
-## 安装 
+## 安装
 
 从小程序基础库版本 2.2.1 或以上、及开发者工具 1.02.1808300 或以上开始，小程序支持使用 npm 安装第三方包，详情请见: [npm 支持 | 微信开放文档](https://developers.weixin.qq.com/miniprogram/dev/devtools/npm.html) 。
 
@@ -92,7 +69,7 @@ yarn add authing-wxapp-sdk
 > 你可以在控制台的 **应用** 中查看自己的应用列表。
 
 ```js
-const { AuthenticationClient } = require("authing-wxapp-sdk")
+const { AuthenticationClient } = require("authing-wxapp-sdk");
 
 const authing = new AuthenticationClient({
   appId: "YOUR_APP_ID",
@@ -110,6 +87,8 @@ const authing = new AuthenticationClient({
 (code: number, message: string, data: any) => void
 ```
 
+> 完整的错误代码请见[此文档](https://docs.authing.cn/v2/reference/error-code.html)。
+
 - `host`: Authing 服务器地址。如果你使用的是公有云版本，请忽略请参数。如果你使用的是私有化部署的版本，此参数必填。格式如下: `https://authing-api.mydomain.com`，最后不带 `/`。
 
 ## 使用方法
@@ -119,28 +98,24 @@ const authing = new AuthenticationClient({
 ![](https://cdn.authing.cn/blog/20201112165637.png)
 
 ```js
-const { code } = await wx.login()
+const { code } = await wx.login();
 // 无需用户授权
 const user = await authing.loginByCode(code); // 成功登录，将 token 写入微信 Storage
 
 // 登录之后可以进行此操作
-await authing.updateProfile(
-  nickname: 'Bob'
-)
+await authing.updateProfile((nickname: "Bob"));
 ```
 
 后续用户再次打开小程序，如果小程序的 Storage 中保存有用户的 token，访问 authing 的请求将会自动带上该 token。
 
 ```javascript
 // 该请求可以成功，因为该用户出于登录状态。
-await authing.updateProfile(
-  nickname: 'Mick'
-)
+await authing.updateProfile((nickname: "Mick"));
 ```
 
 ## API Reference
 
-> 你可以使用 `authing-js-sdk` [AuthenticationClient](https://docs.authing.co/sdk/sdk-for-node/authentication/AuthenticationClient.html) 中的所有方法，调用方法和 `authing-js-sdk` 完全一致。
+> 你可以使用 `authing-js-sdk` [AuthenticationClient](https://docs.authing.cn/v2/reference/sdk-for-node/) 中的所有方法，调用方法和 `authing-js-sdk` 完全一致。
 
 ### loginByCode
 
@@ -164,8 +139,8 @@ await authing.updateProfile(
 首次注册的用户的 profile 中的 nickname, avatar 将为空，因为没有获取到用户的头像和昵称。
 
 ```javascript
-const { code } = await wx.login()
-const data = await authing.loginByCode(code)
+const { code } = await wx.login();
+const data = await authing.loginByCode(code);
 ```
 
 2. 用户手动授权获取昵称头像
@@ -175,7 +150,9 @@ const data = await authing.loginByCode(code)
 - 第一次请求用户手动授权
 
 ```html
-<button open-type="getUserInfo" bindgetuserinfo="getUserInfo"> 获取头像昵称 </button>
+<button open-type="getUserInfo" bindgetuserinfo="getUserInfo">
+  获取头像昵称
+</button>
 ```
 
 ```javascript
@@ -195,8 +172,8 @@ getUserInfo: async function (e) {
 - 之后可以通过 `wx.getUserInfo` 自动获取
 
 ```javascript
-const { rawData } = await wx.getUserInfo()
-const user = await authing.loginByCode(code, { rawData })
+const { rawData } = await wx.getUserInfo();
+const user = await authing.loginByCode(code, { rawData });
 // 或者传 iv encryptedData
 // const { iv, encryptedData } = e.detail
 // const user = await authing.loginByCode(code, { iv, encryptedData })
@@ -213,12 +190,14 @@ const user = await authing.loginByCode(code, { rawData })
 
 - `code`: 调用 [wx.login()](https://developers.weixin.qq.com/miniprogram/dev/api/open-api/login/wx.login.html) 获取的 `code`，不需要用户授权。必填。
 - `iv`: `open-type` 为 `getPhoneNumber` 的[微信 Button 组件](https://developers.weixin.qq.com/miniprogram/dev/component/button.html) 点击事件返回的 `iv`。必填.
-- `encryptedData`:  `open-type` 为 `getPhoneNumber` 的[微信 Button 组件](https://developers.weixin.qq.com/miniprogram/dev/component/button.html) 点击事件返回的 `encryptedData`。必填.
+- `encryptedData`: `open-type` 为 `getPhoneNumber` 的[微信 Button 组件](https://developers.weixin.qq.com/miniprogram/dev/component/button.html) 点击事件返回的 `encryptedData`。必填.
 
 #### 示例
 
 ```html
-<button open-type="getPhoneNumber" bindgetphonenumber="getPhone"> 获取手机号 </button>
+<button open-type="getPhoneNumber" bindgetphonenumber="getPhone">
+  获取手机号
+</button>
 ```
 
 ```javascript
@@ -230,7 +209,7 @@ getPhone: async function(e) {
 }
 ```
 
-### getPhone 
+### getPhone
 
 > 获取当前用户的手机号（不会使用该手机号注册或绑定账号）
 
@@ -238,12 +217,14 @@ getPhone: async function(e) {
 
 - `code`: 调用 [wx.login()](https://developers.weixin.qq.com/miniprogram/dev/api/open-api/login/wx.login.html) 获取的 `code`，不需要用户授权。必填。
 - `iv`: `open-type` 为 `getPhoneNumber` 的[微信 Button 组件](https://developers.weixin.qq.com/miniprogram/dev/component/button.html) 点击事件返回的 `iv`。必填.
-- `encryptedData`:  `open-type` 为 `getPhoneNumber` 的[微信 Button 组件](https://developers.weixin.qq.com/miniprogram/dev/component/button.html) 点击事件返回的 `encryptedData`。必填.
+- `encryptedData`: `open-type` 为 `getPhoneNumber` 的[微信 Button 组件](https://developers.weixin.qq.com/miniprogram/dev/component/button.html) 点击事件返回的 `encryptedData`。必填.
 
 #### 示例
 
 ```html
-<button open-type="getPhoneNumber" bindgetphonenumber="getPhone"> 获取手机号 </button>
+<button open-type="getPhoneNumber" bindgetphonenumber="getPhone">
+  获取手机号
+</button>
 ```
 
 ```javascript
@@ -274,8 +255,8 @@ getPhone: async function(e) {
 #### 示例
 
 ```javascript
-const { photo } = await authing.updateAvatar()
-console.log(photo)
+const { photo } = await authing.updateAvatar();
+console.log(photo);
 ```
 
 ## 最佳实践
@@ -290,14 +271,14 @@ console.log(photo)
 
 ```js
 try {
-  const user = await authing.loginByEmail('test@example.com', 'passw0rd')
+  const user = await authing.loginByEmail("test@example.com", "passw0rd");
 } catch (error) {
   console.log(error.code); // 2004
   console.log(error.message); // 用户不存在
 }
 ```
 
-> 完整的错误代码请见[此文档](https://docs.authing.cn/advanced/error-code.html)。
+> 完整的错误代码请见[此文档](https://docs.authing.cn/v2/reference/error-code.html)。
 
 你还可以指定 `onError` 统一捕捉所有 Authing 请求异常，如使用 `wx.showModal` 等微信组件显示错误提示。
 
@@ -307,33 +288,11 @@ const authing = new AuthenticationClient({
   onError: (code, message) => {
     wx.showModal({
       content: message,
-      showCancel: false
-    })
-  }
-})
+      showCancel: false,
+    });
+  },
+});
 ```
-
-
-## Contributors ✨
-
-Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
-
-<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
-<!-- prettier-ignore-start -->
-<!-- markdownlint-disable -->
-<table>
-  <tr>
-    <td align="center"><a href="https://github.com/liaochangjiang"><img src="https://avatars2.githubusercontent.com/u/35447896?s=460&u=6ac1fa7c0cb47d61bdb79f8393128dd61cf11fac&v=4" width="100px;" alt=""/><br /><sub><b>liaochangjiang</b></sub></a><br /></td>
-    <td align="center"><a href="https://github.com/leinue"><img src="https://avatars2.githubusercontent.com/u/2469688?s=460&u=d8552f7013594a3758863be7da96ab23983b5eaf&v=4" width="100px;" alt=""/><br /><sub><b>leinue</b></sub></a><br /></td>
-    <td align="center"><a href="https://github.com/Meeken1998"><img src="https://avatars2.githubusercontent.com/u/42825670?s=460&u=5a2102caec919d08407a3a2d412cd17e7c61171c&v=4" width="100px;" alt=""/><br /><sub><b>Meeken1998</b></sub></a><br /></td>
-		<td align="center"><a href="https://github.com/vincentCheng"><img src="https://avatars2.githubusercontent.com/u/6327228" width="100px;" alt=""/><br /><sub><b>vincentCheng</b></sub></a><br /></td>
-  </tr>
-</table>
-
-<!-- markdownlint-enable -->
-<!-- prettier-ignore-end -->
-
-<!-- ALL-CONTRIBUTORS-LIST:END -->
 
 ## 获取帮助
 
