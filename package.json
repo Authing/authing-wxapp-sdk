@@ -1,6 +1,6 @@
 {
   "name": "authing-wxapp-sdk",
-  "version": "4.1.0",
+  "version": "4.2.0",
   "main": "./dist/index.js",
   "repository": "git@git.authing.co:sdk/authing-wxapp-sdk.git",
   "author": "cj <cj@authing.cn>",
@@ -9,7 +9,7 @@
     "build": "tsc"
   },
   "dependencies": {
-    "authing-js-sdk": "4.11.7",
+    "authing-js-sdk": "4.15.8",
     "wx-axios": "^0.0.7"
   },
   "devDependencies": {

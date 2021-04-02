@@ -10,12 +10,12 @@ import Axios from "wx-axios";
 
 export class HttpClient {
   options: ManagementClientOptions;
-  tokenProvider: ManagementTokenProvider | AuthenticationTokenProvider;
+  tokenProvider: AuthenticationTokenProvider;
   axios: AxiosInstance;
 
   constructor(
-    options: ManagementClientOptions | AuthenticationClientOptions,
-    tokenProvider: ManagementTokenProvider | AuthenticationTokenProvider
+    options: AuthenticationClientOptions,
+    tokenProvider: AuthenticationTokenProvider
   ) {
     this.options = options;
     this.tokenProvider = tokenProvider;

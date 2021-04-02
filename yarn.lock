@@ -7,10 +7,10 @@
   resolved "https://registry.npm.taobao.org/@types/node/download/@types/node-14.14.7.tgz?cache=0&sync_timestamp=1604951837015&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2F%40types%2Fnode%2Fdownload%2F%40types%2Fnode-14.14.7.tgz#8ea1e8f8eae2430cf440564b98c6dfce1ec5945d"
   integrity sha1-jqHo+OriQwz0QFZLmMbfzh7FlF0=
 
-authing-js-sdk@4.11.7:
-  version "4.11.7"
-  resolved "https://registry.npm.taobao.org/authing-js-sdk/download/authing-js-sdk-4.11.7.tgz#f196a124ff20b1339468d4470368da66c4ac698a"
-  integrity sha1-8ZahJP8gsTOUaNRHA2jaZsSsaYo=
+authing-js-sdk@4.15.8:
+  version "4.15.8"
+  resolved "https://registry.npm.taobao.org/authing-js-sdk/download/authing-js-sdk-4.15.8.tgz#00f463393345d0ad21f2ba9f8ace6ab0bb657a84"
+  integrity sha1-APRjOTNF0K0h8rqfis5qsLtleoQ=
   dependencies:
     axios "^0.19.2"
     jsencrypt "^3.0.0-rc.1"

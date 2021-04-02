@@ -1,19 +1,13 @@
-import {
-  AuthenticationClientOptions,
-  ManagementClientOptions,
-} from "authing-js-sdk";
+import { AuthenticationClientOptions } from "authing-js-sdk";
 import Axios from "wx-axios";
 import { VERSION } from "./version";
 
 export class GraphqlClient {
   endpoint: string;
-  options: AuthenticationClientOptions | AuthenticationClientOptions;
+  options: AuthenticationClientOptions;
   axios: any;
 
-  constructor(
-    endpoint: string,
-    options: ManagementClientOptions | AuthenticationClientOptions
-  ) {
+  constructor(endpoint: string, options: AuthenticationClientOptions) {
     this.endpoint = endpoint;
     this.options = options;
     this.axios = Axios.create();
@@ -24,7 +18,6 @@ export class GraphqlClient {
     let headers: any = {
       "content-type": "application/json",
       "x-authing-sdk-version": `wxapp:${VERSION}`,
-      "x-authing-userpool-id": this.options.userPoolId,
       "x-authing-request-from": "wxapp",
       "x-authing-app-id": this.options.appId || "",
     };
