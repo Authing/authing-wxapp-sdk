@@ -9,6 +9,9 @@ on:
       email:
         description: 'Please enter your github email'
         required: true
+      version:
+        description: 'Please enter your release version'
+        required: true
 
 jobs:
 
@@ -21,6 +24,7 @@ jobs:
 
     env: 
       PUBLISH_OPTS: ${{ github.ref_name == 'master' && '--verbose' || '--verbose --tag=alpha' }}
+      VERSION: ${{ github.event.inputs.version }}
 
     steps:
 
@@ -29,13 +33,19 @@ jobs:
         with:
           node-version: 12
           registry-url: https://registry.npmjs.org/
+          
+      - name: before scripts
+        run: |
+          echo "Current branch: ${{ github.ref_name }}"
+          echo "Current publish version: ${{ github.event.inputs.version }}"
+          echo "Current user.name: ${{ github.event.inputs.name }}"
+          echo "Current user.email: ${{ github.event.inputs.email }}"
 
-      - name: get version from package.json
-        id: version
-        uses: ashley-taylor/read-json-property-action@v1.0
-        with:
-          path: ./package.json
-          property: version
+      - name: set git config
+        if: ${{ github.ref_name == 'master' }}
+        run: |
+          git config --global user.email ${{ github.event.inputs.email }}
+          git config --global user.name ${{ github.event.inputs.name }}
 
       - name: publish
         run: |
@@ -43,17 +53,11 @@ jobs:
           yarn
           npm run build
           npm config set //registry.npmjs.org/:_authToken=$NPM_AUTH_TOKEN
+          npm version $VERSION
           npm publish $PUBLISH_OPTS
           echo "记得同步 taobao 源哦： https://npm.taobao.org/sync/authing-wxapp-sdk  🚀"
         env:
-          VERESION: ${{ steps.version.outputs.value }}
           NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
-
-      - name: set-git-config
-        if: ${{ github.ref_name == 'master' }}
-        run: |
-          git config --global user.email ${{ github.event.inputs.email }}
-          git config --global user.name ${{ github.event.inputs.name }}
     
       - name: release
         if: ${{ github.ref_name == 'master' }}
@@ -66,5 +70,3 @@ jobs:
               ref: "refs/tags/${{ env.VERESION }}",
               sha: context.sha
             })
-        env:
-          VERESION: ${{ steps.version.outputs.value }}
