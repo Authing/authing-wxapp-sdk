@@ -1,4 +1,4 @@
-name: Authing Wxapp SDK Github CI
+name: Authing Wxapp SDK publish CI
 
 on:
   workflow_dispatch:
