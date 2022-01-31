@@ -7,5 +7,4 @@ coverage
 *.log
 
 dist/
-package-lock.json
 .env
