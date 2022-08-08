@@ -12,7 +12,7 @@
 
 <br/>
 
-简体中文 | [English](./README.md)
+English | [简体中文](./README-zh_CN.md)
 
 Authing Miniapp SDK(`authing-wxapp-sdk`) is suitable for use in wechat Miniapp environmen，baseed [authing-js-sdk](https://github.com/authing/authing.js)，adapted wechat Miniapp environment。You can use `authing-js-sdk` [AuthenticationClient](https://docs.authing.cn/v2/reference/sdk-for-node/authentication/AuthenticationClient.html) all methods，such as obtaining and modifying user data, adding user-defined fields, etc。For example:  **Obtain the user's mobile phone number through wechat authorization**、 **Log in with wechat authorization**、**Log in with the mobile number authorized by wechat**, etc。
 
