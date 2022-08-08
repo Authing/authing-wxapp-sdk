@@ -1,6 +1,6 @@
-# SDK for 微信小程序
-
-<div align=center><img width="300" src="https://files.authing.co/authing-console/authing-logo-new-20210924.svg"></div>
+<div align=center>
+  <img width="250" src="https://files.authing.co/authing-console/authing-logo-new-20210924.svg" />
+</div>
 
 <div align="center">
   <a href="https://badge.fury.io/js/authing-wxapp-sdk"><img src="https://badge.fury.io/js/authing-wxapp-sdk.svg" alt="npm version" height="18"></a>
@@ -9,7 +9,10 @@
   <a href="https://github.com/authing-wxapp-sdk" target="_blank"><img src="https://img.shields.io/npm/l/vue.svg" alt="License"></a>
   <a href="javascript:;" target="_blank"><img src="https://img.shields.io/badge/node-%3E=12-green.svg" alt="Node"></a>
 </div>
-<br/>
+
+<br />
+
+English | [简体中文](./README-zh_CN.md)
 
 Authing 小程序 SDK （`authing-wxapp-sdk`） 适用于在微信小程序环境下使用，以 [authing-js-sdk](https://github.com/authing/authing.js) 为基础，对微信小程序环境做了适配。你可以使用 `authing-js-sdk` [AuthenticationClient](https://docs.authing.cn/v2/reference/sdk-for-node/authentication/AuthenticationClient.html) 中的所有方法，如获取、修改用户资料，添加用户自定义字段等。同时专门在小程序环境下使用的 **通过微信授权获取用户手机号**、 **使用微信授权登录**、**使用微信授权的手机号登录** 等方法。
 
@@ -304,12 +307,8 @@ const authing = new AuthenticationClient({
 ```
 
 ## 参与贡献
-- Fork it
-- Create your feature branch (git checkout -b my-new-feature)
-- Commit your changes (git commit -am 'Add some feature')
-- Push to the branch (git push origin my-new-feature)
-- Create new Pull Request
-
-## 获取帮助
-
-Join us on forum: [#authing-chat](https://forum.authing.cn/)
+- Fork 此仓库
+- 创建自己的 git 分支 (git checkout -b my-new-feature)
+- 提交你的修改 (git commit -am 'Add some feature')
+- 将修改内容推送到远程分支 (git push -u origin my-new-feature)
+- 创建一个 Pull Request
