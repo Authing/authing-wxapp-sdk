@@ -10,75 +10,77 @@
   <a href="javascript:;" target="_blank"><img src="https://img.shields.io/badge/node-%3E=12-green.svg" alt="Node"></a>
 </div>
 
-<br />
+<br/>
 
-English | [简体中文](./README-zh_CN.md)
+简体中文 | [English](./README.md)
 
-Authing 小程序 SDK （`authing-wxapp-sdk`） 适用于在微信小程序环境下使用，以 [authing-js-sdk](https://github.com/authing/authing.js) 为基础，对微信小程序环境做了适配。你可以使用 `authing-js-sdk` [AuthenticationClient](https://docs.authing.cn/v2/reference/sdk-for-node/authentication/AuthenticationClient.html) 中的所有方法，如获取、修改用户资料，添加用户自定义字段等。同时专门在小程序环境下使用的 **通过微信授权获取用户手机号**、 **使用微信授权登录**、**使用微信授权的手机号登录** 等方法。
+Authing Miniapp SDK(`authing-wxapp-sdk`) is suitable for use in wechat Miniapp environmen，baseed [authing-js-sdk](https://github.com/authing/authing.js)，adapted wechat Miniapp environment。You can use `authing-js-sdk` [AuthenticationClient](https://docs.authing.cn/v2/reference/sdk-for-node/authentication/AuthenticationClient.html) all methods，such as obtaining and modifying user data, adding user-defined fields, etc。For example:  **Obtain the user's mobile phone number through wechat authorization**、 **Log in with wechat authorization**、**Log in with the mobile number authorized by wechat**, etc。
 
-## 在 Authing 中配置小程序登录
+##  Configuring Miniapp login in Authing
 
-为了在小程序中使用 Authing 小程序 SDK，你需要先在[微信开放平台](https://mp.weixin.qq.com/)申请一个小程序，同时在 [Authing 控制台](https://console.authing.cn/console/userpool)内填入该小程序的配置。
+To use the authoring Miniapp SDK in Miniapp，you need to apply for a small program on the[微信开放平台](https://mp.weixin.qq.com/)，and at the same time [Authing Console](https://console.authing.cn/console/userpool) fill in the configuration of the Miniapp.
 
 <details>
-<summary><strong>配置小程序登录</strong></summary>
 
-1. 前先前往[微信开放平台](https://mp.weixin.qq.com/)注册一个微信小程序开发账号
+<summary><strong>Configure Miniapp login</strong></summary>
 
-- **如果你需要获取用户手机号，需要通过微信认证。**
-- 将 `core.authing.cn` 加入微信的 **request 合法域名**:
+1. Go to [微信开放平台](https://mp.weixin.qq.com/) first, register a wechat Miniapp development account.
+
+- **If you need to obtain the user's mobile phone number, you need to pass wechat authentication.**
+
+- Add `core.authing Cn` to **request legal domain name**:
 
 ![](https://cdn.authing.cn/blog/20201112142753.png)
 
-2. 在 [Authing 控制台](https://console.authing.cn/console/userpool)开启微信小程序社会化登录。
+2. Go to [Authing 控制台](https://console.authing.cn/console/userpool) open wechat Miniapp social login.
 
-- 获取微信小程序 AppId 和 AppSecret
+- Get `appId` and `appSecret` of wechat Miniapp
 
 ![](https://cdn.authing.cn/blog/20201112143117.png)
 
-- 前往 [Authing 控制台](https://console.authing.cn/console/userpool) **连接身份源** - **社会化登录** - **小程序内登录**:
+- Go to [Authing 控制台](https://console.authing.cn/console/userpool) **Connect identity source** - **Social login** - **Login in Miniapp**:
 
 ![](https://cdn.authing.cn/blog/20201112143302.png)
 
-- 填入小程序 AppId 和 AppSecret，点击保存即可。
+- Fill in the Miniapp `appId` and `appSecret`, and click save.
 
 ![](https://cdn.authing.cn/blog/20201112143351.png)
 
 </details>
 
-## 安装
+## Install
 
-从小程序基础库版本 2.2.1 或以上、及开发者工具 1.02.1808300 或以上开始，小程序支持使用 npm 安装第三方包，详情请见: [npm 支持 | 微信开放文档](https://developers.weixin.qq.com/miniprogram/dev/devtools/npm.html) 。
+Starting from the basic library version 2.2.1 or above and the developer tool 1.02.1808300 or above, the applet supports the installation of third-party packages using NPM. For details, please refer to: [npm 支持 | 微信开放文档](https://developers.weixin.qq.com/miniprogram/dev/devtools/npm.html) 。
 
-### 安装 npm 包
+### Install NPM package
 
-使用 npm:
+Use NPM:
 
 ```
 npm install authing-wxapp-sdk
 ```
 
-使用 yarn:
+Use Yarn:
 
 ```
 yarn add authing-wxapp-sdk
 ```
 
-### 在小程序开发者工具中构建 npm
+### Building NPM in Miniapp developer tools
 
-点击开发者工具中的菜单栏：工具 --> 构建 npm:
+Click the menu bar in the developer tool：Tool --> building npm:
 
 <img src="https://cdn.authing.cn/blog/20201112141931.png" height="400px"></img>
 
-勾选 **使用 npm 模块** 选项：
+Check the **use NPM module** Option:
 
 ![](https://cdn.authing.cn/blog/20201112142118.png)
 
-## 初始化
+## Initialize
 
-`AuthenticationClient` 初始化需要传入`AppId` （应用 ID）：
+Init `AuthenticationClient` need passing `AppId`:
 
-> 你可以在控制台的 **应用** 中查看自己的应用列表。
+> You can view your application list in **applications** on the console.
 
 ```js
 const { AuthenticationClient } = require("authing-wxapp-sdk");
@@ -88,82 +90,82 @@ const authing = new AuthenticationClient({
 });
 ```
 
-完整参数列表如下:
+The complete parameter list is as follows:
 
-- `appId`: Authing 应用 ID（必填）；
-- `accessToken`: 通过用户的 token 初始化 SDK（可选，你可以在前端 localStorage 中缓存用户 token，实现记住登录的目的） 。
-- `timeout`: 请求超时时间，单位为毫秒，默认为 10000 （10 秒）。
-- `onError`: 错误处理函数，你可以用其来全局捕捉 Authing 客户端请求的所有异常。函数定义为：
+- `appId`: Authing APP ID（required）；
+- `accessToken`: Initialize the SDK through the user's token (optional, you can cache the user's token in the front-end localstorage to realize the purpose of remembering login).
+- `timeout`: Request timeout, unit: ms, default: 10000 (10 seconds).
+- `onError`: Error handling function, you can use it to catch all exceptions requested by the authoring client globally. The function is defined as:
 
 ```js
 (code: number, message: string, data: any) => void
 ```
 
-> 完整的错误代码请见[此文档](https://docs.authing.cn/v2/reference/error-code.html)。
+> Refer to for complete error codes [doc](https://docs.authing.cn/v2/reference/error-code.html)。
 
-- `host`: Authing 服务器地址。如果你使用的是公有云版本，请忽略请参数。如果你使用的是私有化部署的版本，此参数必填。格式如下: `https://authing-api.mydomain.com`，最后不带 `/`。
+- `host`: Authing server。If you are using the public cloud version, please ignore the parameter. This parameter is required if you are using the version of privatized deployment. The format is as follows:: `https://authing-api.mydomain.com`，finally, without `/`.
 
-## 使用方法
+## Usage
 
-在用户完成登录之后，SDK 会将用户的 `token` 写入到微信的 Storage 中，后续请求会自动携带 `token` 访问。
+After the user logs in, the SDK will write the user's `token` into the storage of wechat, and subsequent requests will automatically carry the `token` for access.
 
 ![](https://cdn.authing.cn/blog/20201112165637.png)
 
 ```js
 const { code } = await wx.login();
-// 无需用户授权
+// No user authorization required
 const user = await authing.loginByCode(code); // 成功登录，将 token 写入微信 Storage
 
-// 登录之后可以进行此操作
+// You can do this after logging in
 await authing.updateProfile((nickname: "Bob"));
 ```
 
-后续用户再次打开小程序，如果小程序的 Storage 中保存有用户的 token，访问 authing 的请求将会自动带上该 token。
+Subsequently, the user opens the applet again. If the token of the user is saved in the storage of the applet, the request to access authing will automatically carry the token.
 
 ```javascript
-// 该请求可以成功，因为该用户出于登录状态。
+// The request can succeed because the user is logged in.
 await authing.updateProfile((nickname: "Mick"));
 ```
 
 ## API Reference
 
-> 你可以使用 `authing-js-sdk` [AuthenticationClient](https://docs.authing.cn/v2/reference/sdk-for-node/) 中的所有方法，调用方法和 `authing-js-sdk` 完全一致。
+> You can use `authing-js-sdk` [AuthenticationClient](https://docs.authing.cn/v2/reference/sdk-for-node/) all methods，the calling method is completely consistent with `Authing JS SDK`.
 
 ### loginByCode
 
-> 使用微信授权的方式登录。
+> Log in with wechat authorization。
 
-- 如果用户第一次在小程序中登录，且用户没有使用和该小程序绑定同一主体的微信应用登录过，将会创建一个新账号。
-- 如果用户第一次在小程序中登录，但是该用户使用和该小程序绑定同一主体的微信应用登录过，将会返回对应的微信账号。
+- If the user logs in the applet for the first time, and the user has not logged in using the wechat application bound to the same subject as the applet, a new account will be created.
+- If the user logs in the applet for the first time, but the user has logged in using the wechat application of the same subject bound to the applet, the corresponding wechat account will be returned.
 
-#### 参数
+#### Parameter
 
-- `code`: 调用 [wx.login()](https://developers.weixin.qq.com/miniprogram/dev/api/open-api/login/wx.login.html) 获取的 `code`，不需要用户授权。必填。
-- `options`: 选填。
-- `options.iv`: `open-type` 为 `getUserInfo` 的[微信 Button 组件](https://developers.weixin.qq.com/miniprogram/dev/component/button.html) 点击事件返回的 `iv`。`iv` 和 `encryptedData` 必须同时传递，Authing Server 会尝试从 `iv` 和 `encryptedData` 中加密出用户资料。第一次需要用户手动授权。选填。
-- `options.encryptedData`: `open-type` 为 `getUserInfo` 的[微信 Button 组件](https://developers.weixin.qq.com/miniprogram/dev/component/button.html) 点击事件返回的 `encryptedData`。`iv` 和 `encryptedData` 必须同时传递，Authing Server 会尝试从 `iv` 和 `encryptedData` 中加密出用户资料。第一次需要用户手动授权。选填。
-- `options.rawData`: `open-type` 为 `getUserInfo` 的[微信 Button 组件](https://developers.weixin.qq.com/miniprogram/dev/component/button.html) 点击事件返回的 `rawData`。和 `iv` + `encryptedData` 二选一，如果传了 `rawData`, Authing Server 会直接使用该数据作为用户的 profile。第一次需要用户手动授权。选填。
+- `code`: Call [wx.login()](https://developers.weixin.qq.com/miniprogram/dev/api/open-api/login/wx.login.html) get the `code`，no user authorization is required. Required。
+- `options`: Optional。
+- `options.iv`: `open-type` is `getUserInfo` [微信 Button 组件](https://developers.weixin.qq.com/miniprogram/dev/component/button.html) returned `iv`。`iv` and `encryptedData` are required，The Authing server will attempt to encrypt user data from 'iv' and 'encrypteddata'. Manual authorization is required for the first time. Optional.
+- `options.encryptedData`: `open-type` is `getUserInfo` [微信 Button 组件](https://developers.weixin.qq.com/miniprogram/dev/component/button.html) returned `encryptedData`。`iv` and `encryptedData` are required. The server will attempt to encrypt user data from 'iv' and 'encrypted data'. Manual authorization is required for the first time. Optional.
+- `options.rawData`: `open-type` is `getUserInfo` [微信 Button 组件](https://developers.weixin.qq.com/miniprogram/dev/component/button.html) returned `rawData`. Choose between 'iv' + 'encrypteddata'. If 'rawdata' is passed, the authing server will directly use the data as the user's profile. Manual authorization is required for the first time. Optional.
 
-#### 示例
+#### Example
 
-1. 静默授权
+1. Silent authorization
 
-首次注册的用户的 profile 中的 nickname, avatar 将为空，因为没有获取到用户的头像和昵称。
+The nickname and avatar in the profile of the first registered user will be empty because the user's Avatar and nickname are not obtained.
 
 ```javascript
 const { code } = await wx.login();
 const data = await authing.loginByCode(code);
 ```
 
-2. 用户手动授权获取昵称头像
+2. User manually authorized to obtain nickname Avatar
 
-> 仅第一次需要授权，用户授权之后可以使用 `wx.getUserInfo` 直接获取头像昵称。
+> Authorization is only required for the first time. Users can use ` Wx GetUserInfo ` get the nickname of the avatar directly
 
-- 第一次请求用户手动授权
+- Request user manual authorization for the first time
 
 ```html
 <button open-type="getUserInfo" bindgetuserinfo="getUserInfo">
-  获取头像昵称
+  Get avatar nickname
 </button>
 ```
 
@@ -173,7 +175,7 @@ getUserInfo: async function (e) {
   const { rawData } = e.detail
   const user = await authing.loginByCode(code, { rawData })
 
-  // 或者传 iv encryptedData
+  // or passing iv encryptedData
   // const { iv, encryptedData } = e.detail
   // const user = await authing.loginByCode(code, { iv, encryptedData })
 
@@ -181,7 +183,7 @@ getUserInfo: async function (e) {
 }
 ```
 
-- 之后可以通过 `wx.getUserInfo` 自动获取
+- After that, you can use the `wx.getUserInfo` auto get
 
 ```javascript
 const { rawData } = await wx.getUserInfo();
@@ -193,22 +195,22 @@ const user = await authing.loginByCode(code, { rawData });
 
 ### loginByPhone
 
-> 通过微信手机号授权的方式登录。每次调用都需要用户手动授权。
+> Log in through wechat mobile number authorization. Each call requires manual authorization by the user.
 
-- 如果该手机号第一次注册，该会把该手机号与该微信账号绑定（不存在会创建）。
-- 如果该手机号之前注册过，将会返回该手机号对应的账号，并且将该手机号与当前微信账号绑定。
+- If the mobile phone number is registered for the first time, it will bind the mobile phone number with the wechat account (it will be created if it does not exist).
+- If the mobile phone number has been registered before, the account corresponding to the mobile phone number will be returned, and the mobile phone number will be bound with the current wechat account.
 
-#### 参数
+#### Parameter
 
-- `code`: 调用 [wx.login()](https://developers.weixin.qq.com/miniprogram/dev/api/open-api/login/wx.login.html) 获取的 `code`，不需要用户授权。必填。
-- `iv`: `open-type` 为 `getPhoneNumber` 的[微信 Button 组件](https://developers.weixin.qq.com/miniprogram/dev/component/button.html) 点击事件返回的 `iv`。必填.
-- `encryptedData`: `open-type` 为 `getPhoneNumber` 的[微信 Button 组件](https://developers.weixin.qq.com/miniprogram/dev/component/button.html) 点击事件返回的 `encryptedData`。必填.
+- `code`: Call [wx.login()](https://developers.weixin.qq.com/miniprogram/dev/api/open-api/login/wx.login.html) get `code`，no user authorization is required. Required.
+- `iv`: `open-type` is `getPhoneNumber` [微信 Button 组件](https://developers.weixin.qq.com/miniprogram/dev/component/button.html) returned `iv`. Required.
+- `encryptedData`: `open-type` is `getPhoneNumber` [微信 Button 组件](https://developers.weixin.qq.com/miniprogram/dev/component/button.html) return `encryptedData`. Required.
 
-#### 示例
+#### Example
 
 ```html
 <button open-type="getPhoneNumber" bindgetphonenumber="getPhone">
-  获取手机号
+  get phone code
 </button>
 ```
 
@@ -223,15 +225,15 @@ getPhone: async function(e) {
 
 ### getPhone
 
-> 获取当前用户的手机号（不会使用该手机号注册或绑定账号）
+> Get the mobile phone number of the current user (you will not use this mobile phone number to register or bind an account).
 
-#### 参数
+#### Parameter
 
-- `code`: 调用 [wx.login()](https://developers.weixin.qq.com/miniprogram/dev/api/open-api/login/wx.login.html) 获取的 `code`，不需要用户授权。必填。
-- `iv`: `open-type` 为 `getPhoneNumber` 的[微信 Button 组件](https://developers.weixin.qq.com/miniprogram/dev/component/button.html) 点击事件返回的 `iv`。必填.
-- `encryptedData`: `open-type` 为 `getPhoneNumber` 的[微信 Button 组件](https://developers.weixin.qq.com/miniprogram/dev/component/button.html) 点击事件返回的 `encryptedData`。必填.
+- `code`: Call [wx.login()](https://developers.weixin.qq.com/miniprogram/dev/api/open-api/login/wx.login.html) get `code`，no user authorization is required. Required
+- `iv`: `open-type` is `getPhoneNumber` [微信 Button 组件](https://developers.weixin.qq.com/miniprogram/dev/component/button.html) return `iv`. Required.
+- `encryptedData`: `open-type` is `getPhoneNumber` [微信 Button 组件](https://developers.weixin.qq.com/miniprogram/dev/component/button.html) return `encryptedData`. Required.
 
-#### 示例
+#### Example
 
 ```html
 <button open-type="getPhoneNumber" bindgetphonenumber="getPhone">
@@ -248,7 +250,7 @@ getPhone: async function(e) {
 }
 ```
 
-返回的数据示例：
+Example of returned data:
 
 ```json
 {
@@ -262,37 +264,37 @@ getPhone: async function(e) {
 
 ### updateAvatar
 
-> 更新用户头像，该方法会自动调用 `wx.chooseImage` 获取图片并上传到 Authing 的 cdn，仅需一行代码调用。
+> Update user avatar, this method will automatically call `wx.chooseimage` to get the image and upload it to the CDN of authoring, only one line of code is required.
 
-#### 示例
+#### Example
 
 ```javascript
 const { photo } = await authing.updateAvatar();
 console.log(photo);
 ```
 
-## 最佳实践
+## Best practices
 
-我们推荐用户第一次使用小程序的时候，使用 `loginByCode` 获取该小程序账号对应的 Authing 账号，如果该账号之前绑定了手机号，就无须再次请求用户授权手机号。如果该账号没有绑定手机号，再调用 `loginByPhone` 方法请求用户授权手机号。
+We recommend that when the user uses the applet for the first time, use 'loginbycode' to obtain the authing account corresponding to the applet account. If the account has been bound with a mobile phone number before, there is no need to request the user to authorize the mobile phone number again. If the account is not bound with a mobile phone number, call the 'loginbyphone' method to request the user to authorize a mobile phone number.
 
-用户登录之后，`authing-wxapp-sdk` 会将 `token` 写入小程序的 `Storage`，你可以调用 `authing.checkLoginStatus()` 判断该用户的 token 是否有效，当 token 失效的时候再重新登录。
+After the user logs in, `authing wxApp SDK` will write the `token` to the `storage` of the applet. You can call `authing.checkloginstatus()` judge whether the user's token is valid, and log in again when the token is invalid.
 
-## 错误处理
+## Error handling
 
-你可以使用 `try catch` 进行错误处理:
+You can use `try catch` to handle errors:
 
 ```js
 try {
   const user = await authing.loginByEmail("test@example.com", "passw0rd");
 } catch (error) {
   console.log(error.code); // 2004
-  console.log(error.message); // 用户不存在
+  console.log(error.message); // User does not exist
 }
 ```
 
-> 完整的错误代码请见[此文档](https://docs.authing.cn/v2/reference/error-code.html)。
+> See for complete error codes: [doc](https://docs.authing.cn/v2/reference/error-code.html)。
 
-你还可以指定 `onError` 统一捕捉所有 Authing 请求异常，如使用 `wx.showModal` 等微信组件显示错误提示。
+You can also specify `onerror` to catch all authing request exceptions, such as using `wx.showmodal` and other wechat components display error prompts.
 
 ```js
 const authing = new AuthenticationClient({
@@ -306,9 +308,9 @@ const authing = new AuthenticationClient({
 });
 ```
 
-## 参与贡献
-- Fork 此仓库
-- 创建自己的 git 分支 (git checkout -b my-new-feature)
-- 提交你的修改 (git commit -am 'Add some feature')
-- 将修改内容推送到远程分支 (git push -u origin my-new-feature)
-- 创建一个 Pull Request
+## Contribution
+- Fork it
+- Create your feature branch (git checkout -b my-new-feature)
+- Commit your changes (git commit -am 'Add some feature')
+- Push to the branch (git push origin my-new-feature)
+- Create new Pull Request
