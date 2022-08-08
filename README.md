@@ -18,13 +18,13 @@ Authing Miniapp SDK(`authing-wxapp-sdk`) is suitable for use in wechat Miniapp e
 
 ##  Configuring Miniapp login in Authing
 
-To use the authoring Miniapp SDK in Miniapp，you need to apply for a small program on the[微信开放平台](https://mp.weixin.qq.com/)，and at the same time [Authing Console](https://console.authing.cn/console/userpool) fill in the configuration of the Miniapp.
+To use the authoring Miniapp SDK in Miniapp，you need to apply for a small program on the[Weixin Official Accounts Platform](https://mp.weixin.qq.com/?lang=en_US&token=)，and at the same time [Authing Console](https://console.authing.cn/console/userpool) fill in the configuration of the Miniapp.
 
 <details>
 
 <summary><strong>Configure Miniapp login</strong></summary>
 
-1. Go to [微信开放平台](https://mp.weixin.qq.com/) first, register a wechat Miniapp development account.
+1. Go to [Weixin Official Accounts Platform](https://mp.weixin.qq.com/?lang=en_US&token=) first, register a wechat Miniapp development account.
 
 - **If you need to obtain the user's mobile phone number, you need to pass wechat authentication.**
 
@@ -50,7 +50,7 @@ To use the authoring Miniapp SDK in Miniapp，you need to apply for a small prog
 
 ## Install
 
-Starting from the basic library version 2.2.1 or above and the developer tool 1.02.1808300 or above, the applet supports the installation of third-party packages using NPM. For details, please refer to: [npm 支持 | 微信开放文档](https://developers.weixin.qq.com/miniprogram/dev/devtools/npm.html) 。
+Starting from the basic library version 2.2.1 or above and the developer tool 1.02.1808300 or above, the applet supports the installation of third-party packages using NPM. For details, please refer to: [npm support](https://developers.weixin.qq.com/miniprogram/en/dev/devtools/npm.html).
 
 ### Install NPM package
 
@@ -142,9 +142,9 @@ await authing.updateProfile((nickname: "Mick"));
 
 - `code`: Call [wx.login()](https://developers.weixin.qq.com/miniprogram/dev/api/open-api/login/wx.login.html) get the `code`，no user authorization is required. Required。
 - `options`: Optional。
-- `options.iv`: `open-type` is `getUserInfo` [微信 Button 组件](https://developers.weixin.qq.com/miniprogram/dev/component/button.html) returned `iv`。`iv` and `encryptedData` are required，The Authing server will attempt to encrypt user data from 'iv' and 'encrypteddata'. Manual authorization is required for the first time. Optional.
-- `options.encryptedData`: `open-type` is `getUserInfo` [微信 Button 组件](https://developers.weixin.qq.com/miniprogram/dev/component/button.html) returned `encryptedData`。`iv` and `encryptedData` are required. The server will attempt to encrypt user data from 'iv' and 'encrypted data'. Manual authorization is required for the first time. Optional.
-- `options.rawData`: `open-type` is `getUserInfo` [微信 Button 组件](https://developers.weixin.qq.com/miniprogram/dev/component/button.html) returned `rawData`. Choose between 'iv' + 'encrypteddata'. If 'rawdata' is passed, the authing server will directly use the data as the user's profile. Manual authorization is required for the first time. Optional.
+- `options.iv`: `open-type` is `getUserInfo` [Weixin Button Component](https://developers.weixin.qq.com/miniprogram/en/dev/component/button.html) returned `iv`。`iv` and `encryptedData` are required，The Authing server will attempt to encrypt user data from 'iv' and 'encrypteddata'. Manual authorization is required for the first time. Optional.
+- `options.encryptedData`: `open-type` is `getUserInfo` [Weixin Button Component](https://developers.weixin.qq.com/miniprogram/en/dev/component/button.html) returned `encryptedData`。`iv` and `encryptedData` are required. The server will attempt to encrypt user data from 'iv' and 'encrypted data'. Manual authorization is required for the first time. Optional.
+- `options.rawData`: `open-type` is `getUserInfo` [Weixin Button Component](https://developers.weixin.qq.com/miniprogram/en/dev/component/button.html) returned `rawData`. Choose between 'iv' + 'encrypteddata'. If 'rawdata' is passed, the authing server will directly use the data as the user's profile. Manual authorization is required for the first time. Optional.
 
 #### Example
 
@@ -203,8 +203,8 @@ const user = await authing.loginByCode(code, { rawData });
 #### Parameter
 
 - `code`: Call [wx.login()](https://developers.weixin.qq.com/miniprogram/dev/api/open-api/login/wx.login.html) get `code`，no user authorization is required. Required.
-- `iv`: `open-type` is `getPhoneNumber` [微信 Button 组件](https://developers.weixin.qq.com/miniprogram/dev/component/button.html) returned `iv`. Required.
-- `encryptedData`: `open-type` is `getPhoneNumber` [微信 Button 组件](https://developers.weixin.qq.com/miniprogram/dev/component/button.html) return `encryptedData`. Required.
+- `iv`: `open-type` is `getPhoneNumber` [Weixin Button Component](https://developers.weixin.qq.com/miniprogram/en/dev/component/button.html) returned `iv`. Required.
+- `encryptedData`: `open-type` is `getPhoneNumber` [Weixin Button Component](https://developers.weixin.qq.com/miniprogram/en/dev/component/button.html) return `encryptedData`. Required.
 
 #### Example
 
@@ -230,8 +230,8 @@ getPhone: async function(e) {
 #### Parameter
 
 - `code`: Call [wx.login()](https://developers.weixin.qq.com/miniprogram/dev/api/open-api/login/wx.login.html) get `code`，no user authorization is required. Required
-- `iv`: `open-type` is `getPhoneNumber` [微信 Button 组件](https://developers.weixin.qq.com/miniprogram/dev/component/button.html) return `iv`. Required.
-- `encryptedData`: `open-type` is `getPhoneNumber` [微信 Button 组件](https://developers.weixin.qq.com/miniprogram/dev/component/button.html) return `encryptedData`. Required.
+- `iv`: `open-type` is `getPhoneNumber` [Weixin Button Component](https://developers.weixin.qq.com/miniprogram/en/dev/component/button.html) return `iv`. Required.
+- `encryptedData`: `open-type` is `getPhoneNumber` [Weixin Button Component](https://developers.weixin.qq.com/miniprogram/en/dev/component/button.html) return `encryptedData`. Required.
 
 #### Example
 
