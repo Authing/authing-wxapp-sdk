@@ -1,3 +1,5 @@
+# 此仓库不再维护, 请移步 [authing-js-sdk](https://github.com/authing/authing-js-sdk)
+
 <div align=center>
   <img width="250" src="https://files.authing.co/authing-console/authing-logo-new-20210924.svg" />
 </div>
